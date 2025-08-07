@@ -257,44 +257,121 @@ export class SurrealConnectionPool {
         poolKey: string,
         credentials: ISurrealCredentials,
     ): Promise<Surreal> {
-        const pool = this.pool.get(poolKey) || [];
-        this.pool.set(poolKey, pool);
+        try {
+            const pool = this.pool.get(poolKey) || [];
+            this.pool.set(poolKey, pool);
 
-        // Try to find an available connection
-        const availableEntry = pool.find(
-            entry => !entry.inUse && entry.isHealthy,
-        );
-        if (availableEntry) {
-            availableEntry.inUse = true;
-            availableEntry.lastUsed = Date.now();
-            return availableEntry.client;
-        }
-
-        // Create a new connection if we haven't reached the limit
-        if (pool.length < this.config.maxConnections) {
-            const client = await this.createConnectionWithRetry(credentials);
-            const entry: IPoolEntry = {
-                client,
-                lastUsed: Date.now(),
-                isHealthy: true,
-                inUse: true,
-                created: Date.now(),
-                lastHealthCheck: Date.now(),
-                errorCount: 0,
-            };
-
-            pool.push(entry);
-
-            // Start health check if not already running
-            if (!this.healthCheckTimers.has(poolKey)) {
-                this.startHealthCheck(poolKey);
+            // Try to find an available connection
+            const availableEntry = pool.find(
+                entry => !entry.inUse && entry.isHealthy,
+            );
+            if (availableEntry) {
+                availableEntry.inUse = true;
+                availableEntry.lastUsed = Date.now();
+                
+                // Validate the connection before returning it
+                try {
+                    if (this.config.enableConnectionValidation) {
+                        await this.validateConnection(availableEntry.client, poolKey);
+                    }
+                    return availableEntry.client;
+                } catch (validationError) {
+                    // Mark connection as unhealthy and try another one
+                    availableEntry.isHealthy = false;
+                    availableEntry.inUse = false;
+                    availableEntry.errorCount++;
+                    
+                    if (DEBUG) {
+                        console.warn(
+                            `[ConnectionPool] Existing connection validation failed for ${poolKey}, will create new one`,
+                            validationError,
+                        );
+                    }
+                    
+                    // Remove the unhealthy connection
+                    const index = pool.indexOf(availableEntry);
+                    if (index > -1) {
+                        pool.splice(index, 1);
+                        await this.closeConnectionSafely(availableEntry.client, poolKey);
+                    }
+                }
             }
 
-            return client;
-        }
+            // Create a new connection if we haven't reached the limit
+            if (pool.length < this.config.maxConnections) {
+                try {
+                    const client = await this.createConnectionWithRetry(credentials);
+                    const entry: IPoolEntry = {
+                        client,
+                        lastUsed: Date.now(),
+                        isHealthy: true,
+                        inUse: true,
+                        created: Date.now(),
+                        lastHealthCheck: Date.now(),
+                        errorCount: 0,
+                    };
 
-        // Wait for a connection to become available
-        return this.waitForConnection(poolKey);
+                    pool.push(entry);
+
+                    // Start health check if not already running
+                    if (!this.healthCheckTimers.has(poolKey)) {
+                        this.startHealthCheck(poolKey);
+                    }
+
+                    return client;
+                } catch (createError) {
+                    // Enhanced error handling for connection creation failures
+                    this.stats.connectionErrors++;
+                    
+                    if (DEBUG) {
+                        console.error(
+                            `[ConnectionPool] Failed to create new connection for ${poolKey}:`,
+                            createError,
+                        );
+                    }
+                    
+                    // Re-throw with enhanced context
+                    const enhancedError = new Error(
+                        `Failed to create connection: ${createError instanceof Error ? createError.message : 'Unknown error'}`,
+                    );
+                    (enhancedError as any).category = ErrorCategory.CONNECTION_ERROR;
+                    (enhancedError as any).poolKey = poolKey;
+                    (enhancedError as any).poolSize = pool.length;
+                    (enhancedError as any).maxConnections = this.config.maxConnections;
+                    throw enhancedError;
+                }
+            }
+
+            // Wait for a connection to become available
+            try {
+                return await this.waitForConnection(poolKey);
+            } catch (waitError) {
+                // Enhanced error handling for wait timeout
+                const enhancedError = new Error(
+                    `Connection pool exhausted and timeout reached: ${waitError instanceof Error ? waitError.message : 'Unknown error'}`,
+                );
+                (enhancedError as any).category = ErrorCategory.TIMEOUT_ERROR;
+                (enhancedError as any).poolKey = poolKey;
+                (enhancedError as any).poolSize = pool.length;
+                (enhancedError as any).activeConnections = pool.filter(e => e.inUse).length;
+                throw enhancedError;
+            }
+        } catch (error) {
+            // Log the error with context
+            if (DEBUG) {
+                console.error(
+                    `[ConnectionPool] Failed to acquire connection for ${poolKey}:`,
+                    error,
+                );
+            }
+            
+            // Ensure error has proper categorization
+            if (!(error as any).category) {
+                (error as any).category = ErrorCategory.SYSTEM_ERROR;
+            }
+            
+            throw error;
+        }
     }
 
     /**
@@ -333,9 +410,20 @@ export class SurrealConnectionPool {
         credentials: ISurrealCredentials,
     ): Promise<Surreal> {
         const client = new Surreal();
+        const startTime = Date.now();
 
         try {
-            await client.connect(credentials.connectionString);
+            // Connect with timeout
+            const connectTimeout = 10000; // 10 seconds
+            const connectPromise = client.connect(credentials.connectionString);
+            const timeoutPromise = new Promise<never>((_, reject) => {
+                setTimeout(
+                    () => reject(new Error(`Connection timeout after ${connectTimeout}ms`)),
+                    connectTimeout,
+                );
+            });
+            
+            await Promise.race([connectPromise, timeoutPromise]);
 
             // Set namespace and database if provided
             if (credentials.namespace) {
@@ -345,38 +433,62 @@ export class SurrealConnectionPool {
                 });
             }
 
-            // Authenticate based on authentication type
-            if (credentials.authentication === "Root") {
-                await client.signin({
-                    username: credentials.username,
-                    password: credentials.password,
-                });
-            } else if (credentials.authentication === "Namespace") {
-                await client.signin({
-                    username: credentials.username,
-                    password: credentials.password,
-                    namespace: credentials.namespace,
-                });
-            } else if (credentials.authentication === "Database") {
-                await client.signin({
-                    username: credentials.username,
-                    password: credentials.password,
-                    namespace: credentials.namespace,
-                    database: credentials.database,
-                });
+            // Authenticate based on authentication type with proper error handling
+            try {
+                if (credentials.authentication === "Root") {
+                    await client.signin({
+                        username: credentials.username,
+                        password: credentials.password,
+                    });
+                } else if (credentials.authentication === "Namespace") {
+                    await client.signin({
+                        username: credentials.username,
+                        password: credentials.password,
+                        namespace: credentials.namespace,
+                    });
+                } else if (credentials.authentication === "Database") {
+                    await client.signin({
+                        username: credentials.username,
+                        password: credentials.password,
+                        namespace: credentials.namespace,
+                        database: credentials.database,
+                    });
+                }
+            } catch (authError) {
+                // Enhanced authentication error
+                const enhancedError = new Error(
+                    `Authentication failed for ${credentials.authentication} level: ${authError instanceof Error ? authError.message : 'Unknown error'}`,
+                );
+                (enhancedError as any).category = ErrorCategory.AUTHENTICATION_ERROR;
+                (enhancedError as any).authentication = credentials.authentication;
+                throw enhancedError;
             }
 
+            const connectionTime = Date.now() - startTime;
             if (DEBUG) {
                 // eslint-disable-next-line no-console
-                console.log(`[ConnectionPool] Created new connection`);
+                console.log(
+                    `[ConnectionPool] Created new connection in ${connectionTime}ms`,
+                );
             }
 
             return client;
         } catch (error) {
             this.stats.connectionErrors++;
-            void client.close().catch(() => {
-                // Ignore close errors
-            });
+            
+            // Ensure cleanup happens
+            await this.closeConnectionSafely(client, 'failed-connection');
+            
+            // Enhance error with context if not already enhanced
+            if (!(error as any).category) {
+                const enhancedError = new Error(
+                    `Connection creation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                );
+                (enhancedError as any).category = ErrorCategory.CONNECTION_ERROR;
+                (enhancedError as any).connectionString = credentials.connectionString?.substring(0, 50) + '...';
+                throw enhancedError;
+            }
+            
             throw error;
         }
     }
