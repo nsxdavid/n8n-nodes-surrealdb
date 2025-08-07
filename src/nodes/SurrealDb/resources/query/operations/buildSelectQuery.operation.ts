@@ -199,8 +199,7 @@ export const buildSelectQueryOperation: IOperationHandler = {
         const returnData: INodeExecutionData[] = [];
 
         try {
-            if (DEBUG)
-                debugLog("buildSelectQuery", "Starting operation", itemIndex);
+            debugLog("buildSelectQuery", "Starting operation", itemIndex);
 
             // Get parameters for the specific item
             const table = executeFunctions.getNodeParameter(
@@ -326,8 +325,7 @@ export const buildSelectQueryOperation: IOperationHandler = {
             // Prepare the query based on authentication type
             const finalQuery = prepareSurrealQuery(query, resolvedCredentials);
 
-            if (DEBUG) {
-                debugLog(
+                            debugLog(
                     "buildSelectQuery",
                     "Generated query",
                     itemIndex,
@@ -339,9 +337,7 @@ export const buildSelectQueryOperation: IOperationHandler = {
                     itemIndex,
                     parameters,
                 );
-            }
-
-            // Execute the query with enhanced error handling and recovery
+                        // Execute the query with enhanced error handling and recovery
             const result = await retryWithBackoff(
                 async () => {
                     return await executeQueryWithRecovery<[unknown[]]>(
@@ -402,16 +398,13 @@ export const buildSelectQueryOperation: IOperationHandler = {
                 }
             }
 
-            if (DEBUG) {
-                debugLog(
+                            debugLog(
                     "buildSelectQuery",
                     "Raw query result",
                     itemIndex,
                     JSON.stringify(result),
                 );
-            }
-
-            // Process the results
+                        // Process the results
             if (Array.isArray(result)) {
                 // Process each result set, filtering out null values
                 for (const resultSet of result.filter(item => item !== null)) {
@@ -488,8 +481,7 @@ export const buildSelectQueryOperation: IOperationHandler = {
             );
         }
 
-        if (DEBUG)
-            debugLog(
+        debugLog(
                 "buildSelectQuery",
                 `Completed, returning ${returnData.length} items`,
                 itemIndex,

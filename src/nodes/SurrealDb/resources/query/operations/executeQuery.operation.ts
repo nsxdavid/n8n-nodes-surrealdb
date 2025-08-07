@@ -26,7 +26,7 @@ import {
     ErrorCategory,
 } from "../../../errorHandling";
 
-import { DEBUG, debugLog } from "../../../debug";
+import { debugLog } from "../../../debug";
 
 /**
  * Execute Query operation handler for Query resource
@@ -41,8 +41,7 @@ export const executeQueryOperation: IOperationHandler = {
         const returnData: INodeExecutionData[] = [];
 
         try {
-            if (DEBUG)
-                debugLog("executeQuery", "Starting operation", itemIndex);
+            debugLog("executeQuery", "Starting operation", itemIndex);
 
             // Get parameters for the specific item
             const query = executeFunctions.getNodeParameter(
@@ -112,8 +111,7 @@ export const executeQueryOperation: IOperationHandler = {
             // Prepare the query based on authentication type
             finalQuery = prepareSurrealQuery(finalQuery, resolvedCredentials);
 
-            if (DEBUG) {
-                debugLog(
+                            debugLog(
                     "executeQuery",
                     "Prepared query",
                     itemIndex,
@@ -125,9 +123,7 @@ export const executeQueryOperation: IOperationHandler = {
                     itemIndex,
                     parameters,
                 );
-            }
-
-            // Execute the query with enhanced error handling and recovery
+                        // Execute the query with enhanced error handling and recovery
             const result = await retryWithBackoff(
                 async () => {
                     return await executeQueryWithRecovery<[unknown[]]>(
@@ -183,16 +179,13 @@ export const executeQueryOperation: IOperationHandler = {
                 }
             }
 
-            if (DEBUG) {
-                debugLog(
+                            debugLog(
                     "executeQuery",
                     "Raw query result",
                     itemIndex,
                     JSON.stringify(result),
                 );
-            }
-
-            // The result is an array of arrays, where each array contains the results of a statement
+                        // The result is an array of arrays, where each array contains the results of a statement
             if (Array.isArray(result)) {
                 // Process each result set, filtering out null values
                 for (const resultSet of result.filter(item => item !== null)) {
@@ -247,8 +240,7 @@ export const executeQueryOperation: IOperationHandler = {
             );
         }
 
-        if (DEBUG)
-            debugLog(
+        debugLog(
                 "executeQuery",
                 `Completed, returning ${returnData.length} items`,
                 itemIndex,

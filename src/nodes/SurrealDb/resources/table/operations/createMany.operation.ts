@@ -8,7 +8,7 @@ import {
 } from "../../../GenericFunctions";
 import type { IOperationHandler } from "../../../types/operation.types";
 
-import { DEBUG, debugLog } from "../../../debug";
+import { debugLog } from "../../../debug";
 
 /**
  * Implementation of the "Create Many Records" operation
@@ -28,8 +28,7 @@ export const createManyOperation: IOperationHandler = {
                 "table",
                 itemIndex,
             ) as string;
-            if (DEBUG)
-                debugLog(
+            debugLog(
                     "createMany",
                     "Retrieved table parameter",
                     itemIndex,
@@ -45,8 +44,7 @@ export const createManyOperation: IOperationHandler = {
                 "data",
                 itemIndex,
             ); // Get the parameter named 'data' - could be string or array
-            if (DEBUG) {
-                debugLog(
+                            debugLog(
                     "createMany",
                     "Retrieved data parameter raw value",
                     itemIndex,
@@ -58,9 +56,7 @@ export const createManyOperation: IOperationHandler = {
                     itemIndex,
                     typeof dataInput,
                 );
-            }
-
-            // Validate required field based on raw input
+                        // Validate required field based on raw input
             if (
                 dataInput === undefined ||
                 dataInput === null ||
@@ -73,8 +69,7 @@ export const createManyOperation: IOperationHandler = {
             let data: unknown;
             if (typeof dataInput === "string") {
                 // If it's a string, parse and validate as JSON
-                if (DEBUG)
-                    debugLog(
+                debugLog(
                         "createMany",
                         "Processing data parameter as string",
                         itemIndex,
@@ -82,8 +77,7 @@ export const createManyOperation: IOperationHandler = {
                 data = validateJSON(executeFunctions, dataInput, itemIndex);
             } else if (Array.isArray(dataInput)) {
                 // If it's already an array, use it directly
-                if (DEBUG)
-                    debugLog(
+                debugLog(
                         "createMany",
                         "Processing data parameter as array",
                         itemIndex,
@@ -101,8 +95,7 @@ export const createManyOperation: IOperationHandler = {
             if (!Array.isArray(data)) {
                 throw new Error("Processed Records Data must be an array");
             }
-            if (DEBUG)
-                debugLog(
+            debugLog(
                     "createMany",
                     "Processed data",
                     itemIndex,

@@ -29,7 +29,7 @@ export const createIndexOperation: IOperationHandler = {
     ): Promise<INodeExecutionData[]> {
         const returnData: INodeExecutionData[] = [];
 
-        if (DEBUG) debugLog("createIndex", "Starting operation", itemIndex);
+        debugLog("createIndex", "Starting operation", itemIndex);
 
         // Get credentials
         const credentials =
@@ -188,7 +188,7 @@ export const createIndexOperation: IOperationHandler = {
 
         if (resultCheck.success) {
             // No error, operation succeeded - return minimal valid response for n8n
-            if (DEBUG) debugLog("createIndex", "Success for item", itemIndex);
+            debugLog("createIndex", "Success for item", itemIndex);
             // For CREATE INDEX operations, SurrealDB typically returns [null]
             // We need to ensure we always return a valid json property for n8n
             addSuccessResult(returnData, { success: true }, itemIndex); // Empty object is the minimal valid json property
@@ -201,8 +201,7 @@ export const createIndexOperation: IOperationHandler = {
             );
         }
 
-        if (DEBUG)
-            debugLog(
+        debugLog(
                 "createIndex",
                 `Completed, returning ${returnData.length} items`,
                 itemIndex,

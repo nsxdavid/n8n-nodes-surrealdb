@@ -29,7 +29,7 @@ export const deleteFieldOperation: IOperationHandler = {
     ): Promise<INodeExecutionData[]> {
         const returnData: INodeExecutionData[] = [];
 
-        if (DEBUG) debugLog("deleteField", "Starting operation", itemIndex);
+        debugLog("deleteField", "Starting operation", itemIndex);
         // Get credentials
         const credentials =
             await executeFunctions.getCredentials("surrealDbApi");

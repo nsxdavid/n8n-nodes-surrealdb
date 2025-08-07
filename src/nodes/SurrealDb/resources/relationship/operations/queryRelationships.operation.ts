@@ -27,8 +27,7 @@ export const queryRelationshipsOperation: IOperationHandler = {
     ): Promise<INodeExecutionData[]> {
         const returnData: INodeExecutionData[] = [];
 
-        if (DEBUG)
-            debugLog("queryRelationships", "Starting operation", itemIndex);
+        debugLog("queryRelationships", "Starting operation", itemIndex);
 
         // Get credentials
         const credentials =

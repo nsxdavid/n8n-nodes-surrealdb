@@ -20,7 +20,7 @@ import {
 } from "../../../GenericFunctions";
 import type { IOperationHandler } from "../../../types/operation.types";
 
-import { DEBUG, debugLog } from "../../../debug";
+import { debugLog } from "../../../debug";
 
 /**
  * Merge All Records operation handler for Table resource
@@ -35,8 +35,7 @@ export const mergeAllRecordsOperation: IOperationHandler = {
     ): Promise<INodeExecutionData[]> {
         const returnData: INodeExecutionData[] = [];
         try {
-            if (DEBUG)
-                debugLog("mergeAllRecords", "Starting operation", itemIndex);
+            debugLog("mergeAllRecords", "Starting operation", itemIndex);
 
             // Get credentials
             const credentials =
@@ -99,8 +98,7 @@ export const mergeAllRecordsOperation: IOperationHandler = {
                 options,
             );
 
-            if (DEBUG) {
-                debugLog("mergeAllRecords", "Original query", itemIndex, query);
+                            debugLog("mergeAllRecords", "Original query", itemIndex, query);
                 debugLog(
                     "mergeAllRecords",
                     "Data to merge",
@@ -125,21 +123,16 @@ export const mergeAllRecordsOperation: IOperationHandler = {
                     itemIndex,
                     resolvedCredentials.database,
                 );
-            }
-
-            // Prepare the query based on authentication type
+                        // Prepare the query based on authentication type
             const finalQuery = prepareSurrealQuery(query, resolvedCredentials);
 
-            if (DEBUG) {
-                debugLog(
+                            debugLog(
                     "mergeAllRecords",
                     "Final query",
                     itemIndex,
                     finalQuery,
                 );
-            }
-
-            // Execute the query
+                        // Execute the query
 
             const result = await client.query<[unknown[]]>(finalQuery);
 
@@ -164,16 +157,13 @@ export const mergeAllRecordsOperation: IOperationHandler = {
                 }
             }
 
-            if (DEBUG) {
-                debugLog(
+                            debugLog(
                     "mergeAllRecords",
                     "Raw query result",
                     itemIndex,
                     JSON.stringify(result),
                 );
-            }
-
-            // Find the first non-null array in the result
+                        // Find the first non-null array in the result
             // This matches how other operations like getAllRecords process the result
             const recordsArray = Array.isArray(result)
                 ? result.find(item => Array.isArray(item))
@@ -192,8 +182,7 @@ export const mergeAllRecordsOperation: IOperationHandler = {
                 }
             }
 
-            if (DEBUG)
-                debugLog(
+            debugLog(
                     "mergeAllRecords",
                     `Completed, returning ${returnData.length} items`,
                     itemIndex,
@@ -201,8 +190,7 @@ export const mergeAllRecordsOperation: IOperationHandler = {
             return returnData;
         } catch (error) {
             if (executeFunctions.continueOnFail()) {
-                if (DEBUG)
-                    debugLog(
+                debugLog(
                         "mergeAllRecords",
                         "Error with continueOnFail enabled",
                         itemIndex,
@@ -210,8 +198,7 @@ export const mergeAllRecordsOperation: IOperationHandler = {
                     );
                 return [createErrorResult(error, itemIndex)];
             }
-            if (DEBUG)
-                debugLog(
+            debugLog(
                     "mergeAllRecords",
                     "Error, stopping execution",
                     itemIndex,

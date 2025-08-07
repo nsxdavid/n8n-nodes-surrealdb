@@ -30,7 +30,7 @@ export const createFieldOperation: IOperationHandler = {
     ): Promise<INodeExecutionData[]> {
         const returnData: INodeExecutionData[] = [];
 
-        if (DEBUG) debugLog("createField", "Starting operation", itemIndex);
+        debugLog("createField", "Starting operation", itemIndex);
 
         // Get credentials
         const credentials =
@@ -212,8 +212,7 @@ export const createFieldOperation: IOperationHandler = {
             itemIndex,
         );
 
-        if (DEBUG)
-            debugLog(
+        debugLog(
                 "createField",
                 `Completed, returning ${returnData.length} items`,
                 itemIndex,

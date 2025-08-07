@@ -14,7 +14,7 @@ import {
 } from "../../../GenericFunctions";
 import type { IOperationHandler } from "../../../types/operation.types";
 
-import { DEBUG, debugLog } from "../../../debug";
+import { debugLog } from "../../../debug";
 
 /**
  * Implementation of the "Create Table" operation
@@ -95,11 +95,8 @@ export const createTableOperation: IOperationHandler = {
 
         const preparedQuery = prepareSurrealQuery(query, resolvedCredentials);
 
-        if (DEBUG) {
-            debugLog("createTable", "Query", itemIndex, preparedQuery);
-        }
-
-        // Execute the query
+                    debugLog("createTable", "Query", itemIndex, preparedQuery);
+                // Execute the query
 
         const result = await client.query(preparedQuery);
 
@@ -124,16 +121,13 @@ export const createTableOperation: IOperationHandler = {
             }
         }
 
-        if (DEBUG) {
-            debugLog(
+                    debugLog(
                 "createTable",
                 "Raw query result",
                 itemIndex,
                 JSON.stringify(result),
             );
-        }
-
-        // For CREATE TABLE operations, SurrealDB typically returns [null]
+                // For CREATE TABLE operations, SurrealDB typically returns [null]
         // We need to ensure we always return a valid json property for n8n
         returnData.push({
             json: {}, // Empty object is the minimal valid json property

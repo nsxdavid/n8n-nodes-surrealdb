@@ -27,8 +27,7 @@ export const deleteRelationshipOperation: IOperationHandler = {
     ): Promise<INodeExecutionData[]> {
         const returnData: INodeExecutionData[] = [];
 
-        if (DEBUG)
-            debugLog("deleteRelationship", "Starting operation", itemIndex);
+        debugLog("deleteRelationship", "Starting operation", itemIndex);
 
         // Get credentials
         const credentials =

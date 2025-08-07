@@ -13,7 +13,7 @@ import {
     addSuccessResult,
 } from "../../../utilities";
 
-import { DEBUG, debugLog } from "../../../debug";
+import { debugLog } from "../../../debug";
 
 /**
  * Upsert Record operation handler for Record resource
@@ -25,7 +25,7 @@ export const upsertRecordOperation: IOperationHandler = {
         executeFunctions: IExecuteFunctions,
         itemIndex: number,
     ): Promise<INodeExecutionData[]> {
-        if (DEBUG) debugLog("upsertRecord", "Starting operation", itemIndex);
+        debugLog("upsertRecord", "Starting operation", itemIndex);
         // Get parameters
         let table = executeFunctions.getNodeParameter(
             "table",

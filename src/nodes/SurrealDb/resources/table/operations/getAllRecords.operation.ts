@@ -30,8 +30,7 @@ export const getAllRecordsOperation: IOperationHandler = {
         itemIndex: number,
     ): Promise<INodeExecutionData[]> {
         try {
-            if (DEBUG)
-                debugLog("getAllRecords", "Starting operation", itemIndex);
+            debugLog("getAllRecords", "Starting operation", itemIndex);
 
             // Get credentials
             const credentials =
@@ -158,8 +157,7 @@ export const getAllRecordsOperation: IOperationHandler = {
                 });
             }
 
-            if (DEBUG)
-                debugLog(
+            debugLog(
                     "getAllRecords",
                     `Completed, returning ${returnData.length} items`,
                     itemIndex,
@@ -167,8 +165,7 @@ export const getAllRecordsOperation: IOperationHandler = {
             return returnData;
         } catch (error) {
             if (executeFunctions.continueOnFail()) {
-                if (DEBUG)
-                    debugLog(
+                debugLog(
                         "getAllRecords",
                         "Error with continueOnFail enabled",
                         itemIndex,
@@ -176,8 +173,7 @@ export const getAllRecordsOperation: IOperationHandler = {
                     );
                 return [createErrorResult(error, itemIndex)];
             }
-            if (DEBUG)
-                debugLog(
+            debugLog(
                     "getAllRecords",
                     "Error, stopping execution",
                     itemIndex,

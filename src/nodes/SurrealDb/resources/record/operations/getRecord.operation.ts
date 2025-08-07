@@ -12,7 +12,7 @@ import {
     parseAndValidateRecordId,
 } from "../../../utilities";
 
-import { DEBUG, debugLog } from "../../../debug";
+import { debugLog } from "../../../debug";
 
 /**
  * Get Record operation handler for Record resource
@@ -25,7 +25,7 @@ export const getRecordOperation: IOperationHandler = {
         itemIndex: number,
     ): Promise<INodeExecutionData[]> {
         try {
-            if (DEBUG) debugLog("getRecord", "Starting operation", itemIndex);
+            debugLog("getRecord", "Starting operation", itemIndex);
             // Get parameters for the specific item
             let table = executeFunctions.getNodeParameter(
                 "table",
@@ -42,8 +42,7 @@ export const getRecordOperation: IOperationHandler = {
             // Ensure idInput is a string
             const idInputStr = String(idInput || "");
 
-            if (DEBUG) {
-                debugLog("getRecord", "Original table:", itemIndex, table);
+                            debugLog("getRecord", "Original table:", itemIndex, table);
                 debugLog(
                     "getRecord",
                     "Record ID input:",
@@ -56,16 +55,13 @@ export const getRecordOperation: IOperationHandler = {
                     itemIndex,
                     idInputStr.includes(":"),
                 );
-            }
-
-            // If no table is specified but idInput has a table prefix, use the extracted table
+                        // If no table is specified but idInput has a table prefix, use the extracted table
             if (!table && idInputStr.includes(":")) {
                 table = idInputStr.split(":")[0];
-                if (DEBUG)
-                    debugLog("getRecord", "Extracted table:", itemIndex, table);
+                debugLog("getRecord", "Extracted table:", itemIndex, table);
             }
 
-            if (DEBUG) debugLog("getRecord", "Final table:", itemIndex, table);
+            debugLog("getRecord", "Final table:", itemIndex, table);
 
             // Only validate table as required if it couldn't be extracted from the Record ID
             if (!table) {
@@ -95,8 +91,7 @@ export const getRecordOperation: IOperationHandler = {
 
             // Execute the select operation
             const result = await client.select(recordId);
-            if (DEBUG)
-                debugLog(
+            debugLog(
                     "getRecord",
                     "Raw result from SurrealDB:",
                     itemIndex,

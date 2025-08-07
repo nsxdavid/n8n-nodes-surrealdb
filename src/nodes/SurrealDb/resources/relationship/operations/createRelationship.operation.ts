@@ -28,8 +28,7 @@ export const createRelationshipOperation: IOperationHandler = {
     ): Promise<INodeExecutionData[]> {
         const returnData: INodeExecutionData[] = [];
 
-        if (DEBUG)
-            debugLog("createRelationship", "Starting operation", itemIndex);
+        debugLog("createRelationship", "Starting operation", itemIndex);
 
         // Get credentials
         const credentials =

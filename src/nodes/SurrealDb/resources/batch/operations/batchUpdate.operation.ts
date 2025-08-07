@@ -34,8 +34,7 @@ export const batchUpdateOperation: IOperationHandler = {
                 "table",
                 itemIndex,
             ) as string;
-            if (DEBUG)
-                debugLog(
+            debugLog(
                     "batchUpdate",
                     "Retrieved table parameter",
                     itemIndex,
@@ -50,16 +49,13 @@ export const batchUpdateOperation: IOperationHandler = {
                 "data",
                 itemIndex,
             );
-            if (DEBUG) {
-                debugLog(
+                            debugLog(
                     "batchUpdate",
                     "Retrieved data parameter raw value",
                     itemIndex,
                     dataInput,
                 );
-            }
-
-            // Validate required field
+                        // Validate required field
             if (
                 dataInput === undefined ||
                 dataInput === null ||
@@ -122,16 +118,13 @@ export const batchUpdateOperation: IOperationHandler = {
                 progressTracking: batchConfigInput.progressTracking !== false,
             };
 
-            if (DEBUG) {
-                debugLog(
+                            debugLog(
                     "batchUpdate",
                     "Batch configuration",
                     itemIndex,
                     batchConfig,
                 );
-            }
-
-            // Split data into batches
+                        // Split data into batches
             const batches = splitIntoBatches(data, batchConfig.batchSize);
 
             if (DEBUG) {

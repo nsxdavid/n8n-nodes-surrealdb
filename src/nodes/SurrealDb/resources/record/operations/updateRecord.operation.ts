@@ -31,8 +31,7 @@ export const updateRecordOperation: IOperationHandler = {
         itemIndex: number,
     ): Promise<INodeExecutionData[]> {
         try {
-            if (DEBUG)
-                debugLog("updateRecord", "Starting operation", itemIndex);
+            debugLog("updateRecord", "Starting operation", itemIndex);
             // Get parameters
             let table = executeFunctions.getNodeParameter(
                 "table",
@@ -96,8 +95,7 @@ export const updateRecordOperation: IOperationHandler = {
                 ) as IDataObject;
                 const operations = setOperationsInput?.operations || [];
 
-                if (DEBUG) {
-                    debugLog(
+                                    debugLog(
                         "updateRecord",
                         "setOperationsInput:",
                         itemIndex,
@@ -109,9 +107,7 @@ export const updateRecordOperation: IOperationHandler = {
                         itemIndex,
                         operations,
                     );
-                }
-
-                if (
+                                if (
                     !operations ||
                     !Array.isArray(operations) ||
                     operations.length === 0
@@ -203,16 +199,13 @@ export const updateRecordOperation: IOperationHandler = {
                 }
 
                 const queryResult = await client.query(query);
-                if (DEBUG) {
-                    debugLog(
+                                    debugLog(
                         "updateRecord",
                         "Raw query result:",
                         itemIndex,
                         queryResult,
                     );
-                }
-
-                // SurrealDB query returns an array of results, we need to extract the actual updated record
+                                // SurrealDB query returns an array of results, we need to extract the actual updated record
                 // The structure is typically: [{ result: [updatedRecord] }] or [[updatedRecord]]
                 if (queryResult && queryResult.length > 0) {
                     const firstResult = queryResult[0];

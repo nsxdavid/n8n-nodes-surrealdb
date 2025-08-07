@@ -33,8 +33,7 @@ export const deleteAllRecordsOperation: IOperationHandler = {
     ): Promise<INodeExecutionData[]> {
         const returnData: INodeExecutionData[] = [];
         try {
-            if (DEBUG)
-                debugLog("deleteAllRecords", "Starting operation", itemIndex);
+            debugLog("deleteAllRecords", "Starting operation", itemIndex);
 
             // Get credentials
             const credentials =
@@ -103,16 +102,13 @@ export const deleteAllRecordsOperation: IOperationHandler = {
             // Prepare the query based on authentication type
             const finalQuery = prepareSurrealQuery(query, resolvedCredentials);
 
-            if (DEBUG) {
-                debugLog(
+                            debugLog(
                     "deleteAllRecords",
                     "Final query",
                     itemIndex,
                     finalQuery,
                 );
-            }
-
-            // Execute the query
+                        // Execute the query
             const result = await client.query<[unknown[]]>(finalQuery);
 
             // Check for query errors
@@ -165,8 +161,7 @@ export const deleteAllRecordsOperation: IOperationHandler = {
                 }
             }
 
-            if (DEBUG)
-                debugLog(
+            debugLog(
                     "deleteAllRecords",
                     `Completed, returning ${returnData.length} items`,
                     itemIndex,
@@ -174,8 +169,7 @@ export const deleteAllRecordsOperation: IOperationHandler = {
             return returnData;
         } catch (error) {
             if (executeFunctions.continueOnFail()) {
-                if (DEBUG)
-                    debugLog(
+                debugLog(
                         "deleteAllRecords",
                         "Error with continueOnFail enabled",
                         itemIndex,
@@ -183,8 +177,7 @@ export const deleteAllRecordsOperation: IOperationHandler = {
                     );
                 return [createErrorResult(error, itemIndex)];
             }
-            if (DEBUG)
-                debugLog(
+            debugLog(
                     "deleteAllRecords",
                     "Error, stopping execution",
                     itemIndex,

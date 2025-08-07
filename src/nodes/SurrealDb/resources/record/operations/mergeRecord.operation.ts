@@ -17,7 +17,7 @@ import {
     addErrorResult,
 } from "../../../utilities";
 
-import { DEBUG, debugLog } from "../../../debug";
+import { debugLog } from "../../../debug";
 
 /**
  * Merge Record operation handler for Record resource
@@ -30,7 +30,7 @@ export const mergeRecordOperation: IOperationHandler = {
         itemIndex: number,
     ): Promise<INodeExecutionData[]> {
         try {
-            if (DEBUG) debugLog("mergeRecord", "Starting operation", itemIndex);
+            debugLog("mergeRecord", "Starting operation", itemIndex);
             // Get parameters
             let table = executeFunctions.getNodeParameter(
                 "table",
@@ -116,8 +116,7 @@ export const mergeRecordOperation: IOperationHandler = {
 
             // Return the raw SurrealDB response directly without transformation
             // This respects SurrealDB's native data format and ensures future compatibility
-            if (DEBUG)
-                debugLog(
+            debugLog(
                     "mergeRecord",
                     "Raw result",
                     itemIndex,

@@ -18,7 +18,7 @@ import {
 } from "../../../GenericFunctions";
 import type { IOperationHandler } from "../../../types/operation.types";
 
-import { DEBUG, debugLog } from "../../../debug";
+import { debugLog } from "../../../debug";
 
 /**
  * Implementation of the "Get Many Records" operation
@@ -120,8 +120,7 @@ export const getManyOperation: IOperationHandler = {
                 options,
             );
 
-            if (DEBUG) {
-                debugLog("getMany", "Original query", itemIndex, query);
+                            debugLog("getMany", "Original query", itemIndex, query);
                 debugLog(
                     "getMany",
                     "Authentication type",
@@ -141,28 +140,20 @@ export const getManyOperation: IOperationHandler = {
                     resolvedCredentials.database,
                 );
                 debugLog("getMany", "Record IDs", itemIndex, recordIdList);
-            }
-
-            // Prepare the query based on authentication type
+                        // Prepare the query based on authentication type
             query = prepareSurrealQuery(query, resolvedCredentials);
 
-            if (DEBUG) {
-                debugLog("getMany", "Modified query", itemIndex, query);
-            }
-
-            // Execute the query (no parameters needed for IDs now)
+                            debugLog("getMany", "Modified query", itemIndex, query);
+                        // Execute the query (no parameters needed for IDs now)
             const result = await client.query<[unknown[]]>(query);
 
-            if (DEBUG) {
-                debugLog(
+                            debugLog(
                     "getMany",
                     "Raw query result",
                     itemIndex,
                     JSON.stringify(result),
                 );
-            }
-
-            // Check for errors in the result
+                        // Check for errors in the result
             if (result === null || result === undefined) {
                 throw new NodeOperationError(
                     executeFunctions.getNode(),

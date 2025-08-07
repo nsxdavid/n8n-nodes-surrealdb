@@ -13,7 +13,7 @@ import {
     addErrorResult,
 } from "../../../utilities";
 
-import { DEBUG, debugLog } from "../../../debug";
+import { debugLog } from "../../../debug";
 
 /**
  * Delete Record operation handler for Record resource
@@ -28,8 +28,7 @@ export const deleteRecordOperation: IOperationHandler = {
         const returnData: INodeExecutionData[] = [];
 
         try {
-            if (DEBUG)
-                debugLog("deleteRecord", "Starting operation", itemIndex);
+            debugLog("deleteRecord", "Starting operation", itemIndex);
             // Get parameters
             let table = executeFunctions.getNodeParameter(
                 "table",
@@ -94,8 +93,7 @@ export const deleteRecordOperation: IOperationHandler = {
         } catch (error) {
             // Handle errors based on continueOnFail setting
             if (executeFunctions.continueOnFail()) {
-                if (DEBUG)
-                    debugLog(
+                debugLog(
                         "deleteRecord",
                         "Error with continueOnFail enabled",
                         itemIndex,
@@ -104,8 +102,7 @@ export const deleteRecordOperation: IOperationHandler = {
                 addErrorResult(returnData, error, itemIndex);
             } else {
                 // If continueOnFail is not enabled, re-throw the error
-                if (DEBUG)
-                    debugLog(
+                debugLog(
                         "deleteRecord",
                         "Error, stopping execution",
                         itemIndex,
@@ -115,8 +112,7 @@ export const deleteRecordOperation: IOperationHandler = {
             }
         }
 
-        if (DEBUG)
-            debugLog(
+        debugLog(
                 "deleteRecord",
                 `Completed, returning ${returnData.length} items`,
                 itemIndex,

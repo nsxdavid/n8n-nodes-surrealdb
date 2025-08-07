@@ -29,9 +29,9 @@ export const dropIndexOperation: IOperationHandler = {
     ): Promise<INodeExecutionData[]> {
         const returnData: INodeExecutionData[] = [];
 
-        if (DEBUG) debugLog("dropIndex", "Starting operation", itemIndex);
+        debugLog("dropIndex", "Starting operation", itemIndex);
 
-        if (DEBUG) debugLog("dropIndex", "Processing item", itemIndex);
+        debugLog("dropIndex", "Processing item", itemIndex);
 
         // Get credentials
         const credentials =
@@ -134,7 +134,7 @@ export const dropIndexOperation: IOperationHandler = {
 
         if (resultCheck.success) {
             // No error, operation succeeded - return result using the standard utility function
-            if (DEBUG) debugLog("dropIndex", "Success for item", itemIndex);
+            debugLog("dropIndex", "Success for item", itemIndex);
             addSuccessResult(
                 returnData,
                 {
@@ -153,8 +153,7 @@ export const dropIndexOperation: IOperationHandler = {
             );
         }
 
-        if (DEBUG)
-            debugLog(
+        debugLog(
                 "dropIndex",
                 `Completed, returning ${returnData.length} items`,
                 itemIndex,

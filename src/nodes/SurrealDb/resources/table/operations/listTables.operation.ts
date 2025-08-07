@@ -13,7 +13,7 @@ import {
 import { addErrorResult  } from "../../../utilities"
 import type { IOperationHandler } from "../../../types/operation.types";
 
-import { DEBUG, debugLog } from "../../../debug";
+import { debugLog } from "../../../debug";
 
 /**
  * Implementation of the "List Tables" operation
@@ -53,11 +53,8 @@ export const listTablesOperation: IOperationHandler = {
                 resolvedCredentials,
             );
 
-            if (DEBUG) {
-                debugLog("listTables", "Query", itemIndex, preparedQuery);
-            }
-
-            // Execute the query
+                            debugLog("listTables", "Query", itemIndex, preparedQuery);
+                        // Execute the query
 
             const result = await client.query(preparedQuery);
 
@@ -82,16 +79,13 @@ export const listTablesOperation: IOperationHandler = {
                 }
             }
 
-            if (DEBUG) {
-                debugLog(
+                            debugLog(
                     "listTables",
                     "Raw query result",
                     itemIndex,
                     JSON.stringify(result),
                 );
-            }
-
-            // Process the result based on the observed structure in debug output
+                        // Process the result based on the observed structure in debug output
             if (Array.isArray(result) && result.length > 0 && result[0]) {
                 const dbInfo = result[0] as Record<string, unknown>;
 

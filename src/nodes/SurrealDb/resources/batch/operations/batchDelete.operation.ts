@@ -33,8 +33,7 @@ export const batchDeleteOperation: IOperationHandler = {
                 "table",
                 itemIndex,
             ) as string;
-            if (DEBUG)
-                debugLog(
+            debugLog(
                     "batchDelete",
                     "Retrieved table parameter",
                     itemIndex,
@@ -49,16 +48,13 @@ export const batchDeleteOperation: IOperationHandler = {
                 "ids",
                 itemIndex,
             ) as string;
-            if (DEBUG) {
-                debugLog(
+                            debugLog(
                     "batchDelete",
                     "Retrieved ids parameter",
                     itemIndex,
                     idsInput,
                 );
-            }
-
-            // Validate required field
+                        // Validate required field
             if (!idsInput || idsInput.trim() === "") {
                 throw new Error("Record IDs are required");
             }
@@ -82,16 +78,13 @@ export const batchDeleteOperation: IOperationHandler = {
                 }
             });
 
-            if (DEBUG) {
-                debugLog(
+                            debugLog(
                     "batchDelete",
                     "Processed record IDs",
                     itemIndex,
                     processedIds,
                 );
-            }
-
-            // Get batch configuration
+                        // Get batch configuration
             const batchConfigInput = executeFunctions.getNodeParameter(
                 "batchConfig",
                 itemIndex,
@@ -113,16 +106,13 @@ export const batchDeleteOperation: IOperationHandler = {
                 progressTracking: batchConfigInput.progressTracking !== false,
             };
 
-            if (DEBUG) {
-                debugLog(
+                            debugLog(
                     "batchDelete",
                     "Batch configuration",
                     itemIndex,
                     batchConfig,
                 );
-            }
-
-            // Split IDs into batches
+                        // Split IDs into batches
             const batches = splitIntoBatches(
                 processedIds,
                 batchConfig.batchSize,

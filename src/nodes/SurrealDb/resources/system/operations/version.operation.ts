@@ -12,7 +12,7 @@ import {
     checkQueryResult,
 } from "../../../GenericFunctions";
 import { addSuccessResult  } from "../../../utilities"
-import { DEBUG, debugLog } from "../../../debug";
+import { debugLog } from "../../../debug";
 
 /**
  * Version operation handler for System resource
@@ -24,7 +24,7 @@ export const versionOperation: IOperationHandler = {
         executeFunctions: IExecuteFunctions,
         itemIndex: number,
     ): Promise<INodeExecutionData[]> {
-        if (DEBUG) debugLog("version", "Starting operation", itemIndex);
+        debugLog("version", "Starting operation", itemIndex);
         // Get the credentials from the client (they're already validated and resolved)
         const credentials =
             await executeFunctions.getCredentials("surrealDbApi");

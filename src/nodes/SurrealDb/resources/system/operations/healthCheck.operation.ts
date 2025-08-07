@@ -8,7 +8,7 @@ import type { IOperationHandler } from "../../../types/operation.types";
 import type { Surreal } from "surrealdb";
 import { buildCredentialsObject } from "../../../GenericFunctions";
 import { addSuccessResult  } from "../../../utilities"
-import { DEBUG, debugLog } from "../../../debug";
+import { debugLog } from "../../../debug";
 
 /**
  * Health Check operation handler for System resource
@@ -22,7 +22,7 @@ export const healthCheckOperation: IOperationHandler = {
     ): Promise<INodeExecutionData[]> {
         const returnData: INodeExecutionData[] = [];
 
-        if (DEBUG) debugLog("healthCheck", "Starting operation", itemIndex);
+        debugLog("healthCheck", "Starting operation", itemIndex);
 
         // Get the credentials from the client (they're already validated and resolved)
         const credentials =
@@ -56,22 +56,18 @@ export const healthCheckOperation: IOperationHandler = {
             returnFullResponse: true,
         };
 
-        if (DEBUG) {
-            debugLog(
+                    debugLog(
                 "healthCheck",
                 "Performing health check",
                 itemIndex,
                 healthUrl,
             );
-        }
-
-        try {
+                try {
             // Perform the health check request
             const response =
                 await executeFunctions.helpers.httpRequest(requestOptions);
 
-            if (DEBUG)
-                debugLog("healthCheck", "Health check successful", itemIndex);
+            debugLog("healthCheck", "Health check successful", itemIndex);
 
             // Format the result directly without result wrapper
             addSuccessResult(
@@ -87,8 +83,7 @@ export const healthCheckOperation: IOperationHandler = {
             // rather than throwing an error, regardless of continueOnFail setting.
             // This is intentionally different from other operations because the purpose
             // of a health check is to report on status, not throw errors.
-            if (DEBUG)
-                debugLog(
+            debugLog(
                     "healthCheck",
                     "Health check failed",
                     itemIndex,
@@ -107,8 +102,7 @@ export const healthCheckOperation: IOperationHandler = {
             );
         }
 
-        if (DEBUG)
-            debugLog(
+        debugLog(
                 "healthCheck",
                 `Completed, returning ${returnData.length} items`,
                 itemIndex,
