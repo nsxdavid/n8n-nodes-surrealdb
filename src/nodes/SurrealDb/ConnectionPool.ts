@@ -416,14 +416,24 @@ export class SurrealConnectionPool {
             // Connect with timeout
             const connectTimeout = 10000; // 10 seconds
             const connectPromise = client.connect(credentials.connectionString);
+            
+            // Create timeout with cleanup
+            let timeoutHandle: NodeJS.Timeout | null = null;
             const timeoutPromise = new Promise<never>((_, reject) => {
-                setTimeout(
+                timeoutHandle = setTimeout(
                     () => reject(new Error(`Connection timeout after ${connectTimeout}ms`)),
                     connectTimeout,
                 );
             });
             
-            await Promise.race([connectPromise, timeoutPromise]);
+            try {
+                await Promise.race([connectPromise, timeoutPromise]);
+            } finally {
+                // Clean up the timeout regardless of outcome
+                if (timeoutHandle) {
+                    clearTimeout(timeoutHandle);
+                }
+            }
 
             // Set namespace and database if provided
             if (credentials.namespace) {
@@ -500,9 +510,10 @@ export class SurrealConnectionPool {
         client: Surreal,
         poolKey: string,
     ): Promise<void> {
+        let timeoutHandle: NodeJS.Timeout | null = null;
         try {
             const timeoutPromise = new Promise<never>((_, reject) => {
-                setTimeout(
+                timeoutHandle = setTimeout(
                     () => reject(new Error("Connection validation timeout")),
                     this.config.connectionValidationTimeout,
                 );
@@ -522,6 +533,11 @@ export class SurrealConnectionPool {
             throw new Error(
                 `Connection validation failed: ${error instanceof Error ? error.message : "Unknown error"}`,
             );
+        } finally {
+            // Clean up the timeout
+            if (timeoutHandle) {
+                clearTimeout(timeoutHandle);
+            }
         }
     }
 
@@ -530,7 +546,24 @@ export class SurrealConnectionPool {
      */
     private async waitForConnection(poolKey: string): Promise<Surreal> {
         return new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => {
+            let timeout: NodeJS.Timeout | null = null;
+            let checkInterval: NodeJS.Timeout | null = null;
+            
+            // Cleanup function to ensure all timers are cleared
+            const cleanup = () => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                }
+                if (checkInterval) {
+                    clearInterval(checkInterval);
+                    checkInterval = null;
+                }
+            };
+            
+            // Set up timeout
+            timeout = setTimeout(() => {
+                cleanup();
                 reject(
                     new Error(
                         `Timeout waiting for connection in pool ${poolKey} after ${this.config.acquireTimeout}ms`,
@@ -538,26 +571,31 @@ export class SurrealConnectionPool {
                 );
             }, this.config.acquireTimeout);
 
-            const checkInterval = setInterval(() => {
-                const pool = this.pool.get(poolKey);
-                if (!pool) {
-                    clearInterval(checkInterval);
-                    clearTimeout(timeout);
-                    reject(
-                        new Error(`Pool ${poolKey} was removed while waiting`),
-                    );
-                    return;
-                }
+            // Set up interval to check for available connections
+            checkInterval = setInterval(() => {
+                try {
+                    const pool = this.pool.get(poolKey);
+                    if (!pool) {
+                        cleanup();
+                        reject(
+                            new Error(`Pool ${poolKey} was removed while waiting`),
+                        );
+                        return;
+                    }
 
-                const availableEntry = pool.find(
-                    entry => !entry.inUse && entry.isHealthy,
-                );
-                if (availableEntry) {
-                    clearInterval(checkInterval);
-                    clearTimeout(timeout);
-                    availableEntry.inUse = true;
-                    availableEntry.lastUsed = Date.now();
-                    resolve(availableEntry.client);
+                    const availableEntry = pool.find(
+                        entry => !entry.inUse && entry.isHealthy,
+                    );
+                    if (availableEntry) {
+                        cleanup();
+                        availableEntry.inUse = true;
+                        availableEntry.lastUsed = Date.now();
+                        resolve(availableEntry.client);
+                    }
+                } catch (error) {
+                    // Ensure cleanup happens even if an error occurs
+                    cleanup();
+                    reject(error);
                 }
             }, 100);
         });
@@ -586,8 +624,9 @@ export class SurrealConnectionPool {
 
             try {
                 // Simple health check query with timeout
+                let timeoutHandle: NodeJS.Timeout | null = null;
                 const timeoutPromise = new Promise<never>((_, reject) => {
-                    setTimeout(
+                    timeoutHandle = setTimeout(
                         () => reject(new Error("Health check timeout")),
                         this.config.connectionValidationTimeout,
                     );
@@ -595,7 +634,14 @@ export class SurrealConnectionPool {
 
                 const healthCheckPromise = entry.client.query("SELECT 1");
 
-                await Promise.race([healthCheckPromise, timeoutPromise]);
+                try {
+                    await Promise.race([healthCheckPromise, timeoutPromise]);
+                } finally {
+                    // Clean up the timeout
+                    if (timeoutHandle) {
+                        clearTimeout(timeoutHandle);
+                    }
+                }
 
                 entry.isHealthy = true;
                 entry.lastHealthCheck = Date.now();
