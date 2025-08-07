@@ -77,7 +77,7 @@ function buildWhereClause(conditions: WhereCondition[]): string {
             continue;
         }
         
-        // Validate field name to prevent SQL injection
+        // Validate field name to prevent SurrealQL injection
         const fieldName = condition.field.trim();
         if (!fieldNamePattern.test(fieldName)) {
             if (DEBUG) {
@@ -86,7 +86,7 @@ function buildWhereClause(conditions: WhereCondition[]): string {
             continue;
         }
         
-        // Validate operator to prevent SQL injection
+        // Validate operator to prevent SurrealQL injection
         const operator = condition.operator.trim().toUpperCase();
         if (!validOperators.includes(operator)) {
             if (DEBUG) {
@@ -138,7 +138,7 @@ function buildWhereClause(conditions: WhereCondition[]): string {
 }
 
 /**
- * Build an ORDER BY clause from conditions with SQL injection protection
+ * Build an ORDER BY clause from conditions with SurrealQL injection protection
  */
 function buildOrderByClause(conditions: OrderByCondition[]): string {
     if (!conditions || conditions.length === 0) {
@@ -147,7 +147,7 @@ function buildOrderByClause(conditions: OrderByCondition[]): string {
 
     const clauses: string[] = [];
     
-    // Valid SQL sort directions
+    // Valid SurrealQL sort directions
     const validDirections = ["ASC", "DESC", "ASCENDING", "DESCENDING"];
     
     // Pattern to validate SurrealQL field names for ORDER BY
@@ -156,7 +156,7 @@ function buildOrderByClause(conditions: OrderByCondition[]): string {
 
     for (const condition of conditions) {
         if (condition.field && condition.direction) {
-            // Validate field name to prevent SQL injection
+            // Validate field name to prevent SurrealQL injection
             const fieldName = condition.field.trim();
             if (!fieldNamePattern.test(fieldName)) {
                 // Skip invalid field names or throw an error
