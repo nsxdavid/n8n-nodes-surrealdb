@@ -33,11 +33,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - **WebSocket Connection Prevention**: Prevented connecting to SurrealDB instances using WebSocket protocols (`ws://` or `wss://`). The node now enforces HTTP/HTTPS-only connections and provides clear error messages if a WebSocket URL is supplied.
 - **Centralized Debug Logging**: Added a centralized debug logging system, controlled by the `SURREAL_DEBUG` environment variable, to provide detailed logs for troubleshooting and development without polluting production output.
+- **Security Vulnerabilities**: Applied security fixes for code scanning alerts including proper escaping/encoding and prevention of sensitive information logging.
 
 ### Changed
 - **Error Handling for `executeQuery`**: Improved error handling for the `executeQuery` operation, ensuring that errors are classified and reported more accurately, and that retry logic is applied consistently.
 - **Development Workflow**: Fixed `tsc` command in development scripts and updated ESLint configuration to resolve errors and warnings.
 - **Dependencies**: Updated third-party dependencies for improved stability and compatibility.
+- **Build System**: Replaced Unix-specific `cp` command with cross-platform `copyfiles` package for asset copying, ensuring builds work on Windows, macOS, and Linux.
+- **CI/CD Optimization**: Streamlined GitHub Actions workflows reducing CI runs from 11 to 6 jobs (45% reduction) while maintaining code quality checks and n8n validation.
+- **Repository Configuration**: Updated repository URL to point to the correct upstream repository.
 
 
 ## [0.4.1] - 2025-05-31
