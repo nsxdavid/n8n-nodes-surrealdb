@@ -93,7 +93,7 @@ function buildWhereClause(conditions: WhereCondition[]): string {
 }
 
 /**
- * Build an ORDER BY clause from conditions
+ * Build an ORDER BY clause from conditions with SQL injection protection
  */
 function buildOrderByClause(conditions: OrderByCondition[]): string {
     if (!conditions || conditions.length === 0) {
@@ -101,10 +101,41 @@ function buildOrderByClause(conditions: OrderByCondition[]): string {
     }
 
     const clauses: string[] = [];
+    
+    // Valid SQL sort directions
+    const validDirections = ["ASC", "DESC", "ASCENDING", "DESCENDING"];
+    
+    // Pattern to validate field names (alphanumeric, underscore, dot for nested fields)
+    // This allows table.field notation and basic field names
+    const fieldNamePattern = /^[a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)*$/;
 
     for (const condition of conditions) {
         if (condition.field && condition.direction) {
-            clauses.push(`${condition.field} ${condition.direction}`);
+            // Validate field name to prevent SQL injection
+            const fieldName = condition.field.trim();
+            if (!fieldNamePattern.test(fieldName)) {
+                // Skip invalid field names or throw an error
+                if (DEBUG) {
+                    console.warn(`[buildOrderByClause] Invalid field name: ${fieldName}`);
+                }
+                continue;
+            }
+            
+            // Validate and normalize direction
+            const direction = condition.direction.toUpperCase().trim();
+            if (!validDirections.includes(direction)) {
+                // Skip invalid directions or default to ASC
+                if (DEBUG) {
+                    console.warn(`[buildOrderByClause] Invalid sort direction: ${condition.direction}, defaulting to ASC`);
+                }
+                clauses.push(`${fieldName} ASC`);
+            } else {
+                // Normalize direction to ASC/DESC
+                const normalizedDirection = direction === "ASCENDING" ? "ASC" : 
+                                           direction === "DESCENDING" ? "DESC" : 
+                                           direction;
+                clauses.push(`${fieldName} ${normalizedDirection}`);
+            }
         }
     }
 

@@ -6,6 +6,7 @@ import {
     retryWithBackoff,
     DEFAULT_RETRY_CONFIG,
 } from "./errorHandling";
+import { createHash } from "crypto";
 
 /**
  * Connection pool configuration
@@ -580,10 +581,26 @@ export class SurrealConnectionPool {
     }
 
     /**
-     * Generate a unique key for the connection pool
+     * Generate a unique key for the connection pool using SHA-256 hashing
+     * This provides better security by not exposing sensitive credentials in plain text
+     * and prevents potential key collisions
      */
     private generatePoolKey(credentials: ISurrealCredentials): string {
-        return `${credentials.connectionString}:${credentials.namespace || "default"}:${credentials.database || "test"}:${credentials.username}`;
+        // Create a deterministic object representation for hashing
+        const keyObject = {
+            connectionString: credentials.connectionString,
+            namespace: credentials.namespace || "default",
+            database: credentials.database || "test",
+            username: credentials.username || "",
+            // Include password in the hash to ensure unique pools for different credentials
+            // but don't expose it in plain text
+            password: credentials.password || "",
+        };
+        
+        // Generate SHA-256 hash of the serialized credentials
+        const hash = createHash("sha256");
+        hash.update(JSON.stringify(keyObject));
+        return hash.digest("hex");
     }
 }
 
