@@ -19,48 +19,44 @@ export async function handleSystemOperations(
 
     for (let i = 0; i < itemsLength; i++) {
         try {
+            let operationResult: INodeExecutionData[];
+            
             switch (operation) {
                 case "healthCheck":
-                    returnData = [
-                        ...returnData,
-                        ...(await healthCheckOperation.execute(
+                    operationResult = await healthCheckOperation.execute(
                             client,
                             items,
                             executeFunctions,
                             i,
-                        )),
-                    ];
+                        );
                     break;
                 case "version":
-                    returnData = [
-                        ...returnData,
-                        ...(await versionOperation.execute(
+                    operationResult = await versionOperation.execute(
                             client,
                             items,
                             executeFunctions,
                             i,
-                        )),
-                    ];
+                        );
                     break;
                 case "poolStats":
-                    returnData = [
-                        ...returnData,
-                        ...(await poolStatsOperation.execute(
+                    operationResult = await poolStatsOperation.execute(
                             client,
                             items,
                             executeFunctions,
                             i,
-                        )),
-                    ];
+                        );
                     break;
                 default:
                     throw new Error(
                         `The operation "${operation}" is not supported for the System resource!`,
                     );
             }
+            
+            // Use push with spread for better performance than array spread in loop
+            returnData.push(...operationResult);
         } catch (error) {
             if (executeFunctions.continueOnFail()) {
-                returnData.push(createErrorResult(error as Error, i));
+                returnData.push(createErrorResult(error as Error, i, operation));
                 continue;
             }
             throw error;

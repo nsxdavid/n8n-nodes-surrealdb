@@ -5,7 +5,7 @@ import { dropIndexOperation } from "./operations/dropIndex.operation";
 import { listIndexesOperation } from "./operations/listIndexes.operation";
 import { describeIndexOperation } from "./operations/describeIndex.operation";
 import { rebuildIndexOperation } from "./operations/rebuildIndex.operation";
-//import { createErrorResult } from '../../utilities';
+import { createErrorResult } from '../../utilities';
 
 /**
  * Router for index operations
@@ -22,75 +22,60 @@ export async function handleIndexOperations(
 
     for (let i = 0; i < itemsLength; i++) {
         try {
+            let operationResult: INodeExecutionData[];
+            
             switch (operation) {
                 case "createIndex":
-                    returnData = [
-                        ...returnData,
-                        ...(await createIndexOperation.execute(
+                    operationResult = await createIndexOperation.execute(
                             client,
                             items,
                             executeFunctions,
                             i,
-                        )),
-                    ];
+                        );
                     break;
                 case "dropIndex":
-                    returnData = [
-                        ...returnData,
-                        ...(await dropIndexOperation.execute(
+                    operationResult = await dropIndexOperation.execute(
                             client,
                             items,
                             executeFunctions,
                             i,
-                        )),
-                    ];
+                        );
                     break;
                 case "listIndexes":
-                    returnData = [
-                        ...returnData,
-                        ...(await listIndexesOperation.execute(
+                    operationResult = await listIndexesOperation.execute(
                             client,
                             items,
                             executeFunctions,
                             i,
-                        )),
-                    ];
+                        );
                     break;
                 case "describeIndex":
-                    returnData = [
-                        ...returnData,
-                        ...(await describeIndexOperation.execute(
+                    operationResult = await describeIndexOperation.execute(
                             client,
                             items,
                             executeFunctions,
                             i,
-                        )),
-                    ];
+                        );
                     break;
                 case "rebuildIndex":
-                    returnData = [
-                        ...returnData,
-                        ...(await rebuildIndexOperation.execute(
+                    operationResult = await rebuildIndexOperation.execute(
                             client,
                             items,
                             executeFunctions,
                             i,
-                        )),
-                    ];
+                        );
                     break;
                 default:
-                    // If the operation is not recognized, just continue
-                    break;
+                    throw new Error(
+                        `The operation "${operation}" is not supported for the Index resource!`,
+                    );
             }
+            
+            // Use push with spread for better performance than array spread in loop
+            returnData.push(...operationResult);
         } catch (error) {
             if (executeFunctions.continueOnFail()) {
-                // Structure the error object exactly as n8n expects
-                returnData.push({
-                    json: {
-                        error: error.message || String(error),
-                    },
-                    pairedItem: { item: i },
-                });
+                returnData.push(createErrorResult(error as Error, i, operation));
                 continue;
             }
             throw error;

@@ -15,65 +15,58 @@ export async function handleBatchOperations(
     items: INodeExecutionData[],
     executeFunctions: IExecuteFunctions,
 ): Promise<INodeExecutionData[]> {
-    let returnData: INodeExecutionData[] = [];
+    const returnData: INodeExecutionData[] = [];
 
     const itemsLength = items.length;
 
     for (let i = 0; i < itemsLength; i++) {
         try {
+            let operationResult: INodeExecutionData[];
+            
             switch (operation) {
                 case "batchCreate":
-                    returnData = [
-                        ...returnData,
-                        ...(await batchCreateOperation.execute(
-                            client,
-                            items,
-                            executeFunctions,
-                            i,
-                        )),
-                    ];
+                    operationResult = await batchCreateOperation.execute(
+                        client,
+                        items,
+                        executeFunctions,
+                        i,
+                    );
                     break;
                 case "batchUpdate":
-                    returnData = [
-                        ...returnData,
-                        ...(await batchUpdateOperation.execute(
-                            client,
-                            items,
-                            executeFunctions,
-                            i,
-                        )),
-                    ];
+                    operationResult = await batchUpdateOperation.execute(
+                        client,
+                        items,
+                        executeFunctions,
+                        i,
+                    );
                     break;
                 case "batchDelete":
-                    returnData = [
-                        ...returnData,
-                        ...(await batchDeleteOperation.execute(
-                            client,
-                            items,
-                            executeFunctions,
-                            i,
-                        )),
-                    ];
+                    operationResult = await batchDeleteOperation.execute(
+                        client,
+                        items,
+                        executeFunctions,
+                        i,
+                    );
                     break;
                 case "batchUpsert":
-                    returnData = [
-                        ...returnData,
-                        ...(await batchUpsertOperation.execute(
-                            client,
-                            items,
-                            executeFunctions,
-                            i,
-                        )),
-                    ];
+                    operationResult = await batchUpsertOperation.execute(
+                        client,
+                        items,
+                        executeFunctions,
+                        i,
+                    );
                     break;
                 default:
                     throw new Error(
                         `The operation "${operation}" is not supported for the Batch resource!`,
                     );
             }
+            
+            // Use push with spread for better performance than array spread in loop
+            returnData.push(...operationResult);
         } catch (error) {
             if (executeFunctions.continueOnFail()) {
-                returnData.push(createErrorResult(error as Error, i));
+                returnData.push(createErrorResult(error as Error, i, operation));
                 continue;
             }
             throw error;

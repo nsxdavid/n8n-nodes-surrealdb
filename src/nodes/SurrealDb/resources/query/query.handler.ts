@@ -19,37 +19,36 @@ export async function handleQueryOperations(
 
     for (let i = 0; i < itemsLength; i++) {
         try {
+            let operationResult: INodeExecutionData[];
+            
             switch (operation) {
                 case "executeQuery":
-                    returnData = [
-                        ...returnData,
-                        ...(await executeQueryOperation.execute(
+                    operationResult = await executeQueryOperation.execute(
                             client,
                             items,
                             executeFunctions,
                             i,
-                        )),
-                    ];
+                        );
                     break;
                 case "buildSelectQuery":
-                    returnData = [
-                        ...returnData,
-                        ...(await buildSelectQueryOperation.execute(
+                    operationResult = await buildSelectQueryOperation.execute(
                             client,
                             items,
                             executeFunctions,
                             i,
-                        )),
-                    ];
+                        );
                     break;
                 default:
                     throw new Error(
                         `The operation "${operation}" is not supported for the Query resource!`,
                     );
             }
+            
+            // Use push with spread for better performance than array spread in loop
+            returnData.push(...operationResult);
         } catch (error) {
             if (executeFunctions.continueOnFail()) {
-                returnData.push(createErrorResult(error as Error, i));
+                returnData.push(createErrorResult(error as Error, i, operation));
                 continue;
             }
             throw error;

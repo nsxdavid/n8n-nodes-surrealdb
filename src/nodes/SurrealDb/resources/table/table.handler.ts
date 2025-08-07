@@ -116,8 +116,8 @@ export async function handleTableOperations(
                     continue;
             }
 
-            // Add the operation result to returnData
-            returnData = [...returnData, ...operationResult];
+            // Use push with spread for better performance than array spread in loop
+            returnData.push(...operationResult);
         } catch (error) {
             if (executeFunctions.continueOnFail()) {
                 // Structure the error object exactly as n8n expects
