@@ -9,12 +9,11 @@ import {
 import {
     createRecordId,
     parseAndValidateRecordId,
-    debugLog,
     addSuccessResult,
     addErrorResult,
 } from "../../../utilities";
 
-import { DEBUG } from "../../../debug";
+import { DEBUG, debugLog } from "../../../debug";
 
 /**
  * Delete Record operation handler for Record resource

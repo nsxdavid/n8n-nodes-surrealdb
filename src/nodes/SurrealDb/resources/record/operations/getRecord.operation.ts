@@ -10,10 +10,9 @@ import {
     formatSingleResult,
     createRecordId,
     parseAndValidateRecordId,
-    debugLog,
 } from "../../../utilities";
 
-import { DEBUG } from "../../../debug";
+import { DEBUG, debugLog } from "../../../debug";
 
 /**
  * Get Record operation handler for Record resource

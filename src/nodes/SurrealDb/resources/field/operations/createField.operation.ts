@@ -12,10 +12,10 @@ import {
     buildCredentialsObject,
     checkQueryResult,
 } from "../../../GenericFunctions";
-import { debugLog, addSuccessResult } from "../../../utilities";
+import { addSuccessResult  } from "../../../utilities"
 import type { IOperationHandler } from "../../../types/operation.types";
 
-import { DEBUG } from "../../../debug";
+import { DEBUG, debugLog } from "../../../debug";
 
 /**
  * Implementation of the "Create Field" operation

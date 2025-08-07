@@ -1,6 +1,5 @@
 import type { IExecuteFunctions, INodeExecutionData } from "n8n-workflow";
 import type { Surreal } from "surrealdb";
-import { debugLog } from "../../../utilities";
 import {
     validateRequiredField,
     cleanTableName,
@@ -14,7 +13,7 @@ import {
     createBatchResult,
 } from "../batch.utilities";
 
-import { DEBUG } from "../../../debug";
+import { DEBUG, debugLog } from "../../../debug";
 
 /**
  * Implementation of the "Batch Delete" operation

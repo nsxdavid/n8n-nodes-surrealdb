@@ -11,7 +11,7 @@ import {
     validateAndParseData,
     cleanTableName,
 } from "../../../GenericFunctions";
-import { createRecordId, debugLog, addSuccessResult } from "../../../utilities";
+import { createRecordId, addSuccessResult } from "../../../utilities";
 import {
     handleOperationError,
     retryWithBackoff,
@@ -19,7 +19,7 @@ import {
     ErrorCategory,
 } from "../../../errorHandling";
 
-import { DEBUG } from "../../../debug";
+import { DEBUG, debugLog } from "../../../debug";
 
 /**
  * Create Record operation handler for Record resource

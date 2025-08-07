@@ -7,7 +7,6 @@ import type {
 import { NodeOperationError } from "n8n-workflow";
 import { RecordId } from "surrealdb";
 import { createEnhancedErrorResult } from "./errorHandling";
-import { DEBUG } from "./debug";
 
 /**
  * Generate paired item data for the given number of items
@@ -171,25 +170,6 @@ export function addErrorResult(
     );
 }
 
-/**
- * Debug logging utility
- */
-export function debugLog(
-    operation: string,
-    message: string,
-    itemIndex?: number,
-    data?: unknown,
-): void {
-    if (DEBUG) {
-        const prefix =
-            itemIndex !== undefined
-                ? `[${operation}:${itemIndex}]`
-                : `[${operation}]`;
-        const dataStr = data !== undefined ? ` - ${JSON.stringify(data)}` : "";
-        // eslint-disable-next-line no-console
-        console.log(`${prefix} ${message}${dataStr}`);
-    }
-}
 
 /**
  * Validate connection pool configuration

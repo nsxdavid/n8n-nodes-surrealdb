@@ -7,9 +7,8 @@ import type {
 import type { IOperationHandler } from "../../../types/operation.types";
 import type { Surreal } from "surrealdb";
 import { buildCredentialsObject } from "../../../GenericFunctions";
-import { debugLog, addSuccessResult } from "../../../utilities";
-
-import { DEBUG } from "../../../debug";
+import { addSuccessResult  } from "../../../utilities"
+import { DEBUG, debugLog } from "../../../debug";
 
 /**
  * Health Check operation handler for System resource

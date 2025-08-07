@@ -14,11 +14,10 @@ import {
 import {
     createRecordId,
     parseAndValidateRecordId,
-    debugLog,
     addErrorResult,
 } from "../../../utilities";
 
-import { DEBUG } from "../../../debug";
+import { DEBUG, debugLog } from "../../../debug";
 
 /**
  * Merge Record operation handler for Record resource

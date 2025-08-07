@@ -10,11 +10,10 @@ import {
 import {
     createRecordId,
     parseAndValidateRecordId,
-    debugLog,
     addSuccessResult,
 } from "../../../utilities";
 
-import { DEBUG } from "../../../debug";
+import { DEBUG, debugLog } from "../../../debug";
 
 /**
  * Upsert Record operation handler for Record resource

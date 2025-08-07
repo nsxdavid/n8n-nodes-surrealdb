@@ -11,9 +11,8 @@ import {
     buildCredentialsObject,
     checkQueryResult,
 } from "../../../GenericFunctions";
-import { debugLog, addSuccessResult } from "../../../utilities";
-
-import { DEBUG } from "../../../debug";
+import { addSuccessResult  } from "../../../utilities"
+import { DEBUG, debugLog } from "../../../debug";
 
 /**
  * Version operation handler for System resource

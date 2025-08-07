@@ -1,6 +1,6 @@
 import type { IExecuteFunctions, INodeExecutionData } from "n8n-workflow";
 import type { Surreal } from "surrealdb";
-import { formatArrayResult, debugLog } from "../../../utilities";
+import { formatArrayResult } from "../../../utilities"
 import {
     validateJSON,
     validateRequiredField,
@@ -8,7 +8,7 @@ import {
 } from "../../../GenericFunctions";
 import type { IOperationHandler } from "../../../types/operation.types";
 
-import { DEBUG } from "../../../debug";
+import { DEBUG, debugLog } from "../../../debug";
 
 /**
  * Implementation of the "Create Many Records" operation

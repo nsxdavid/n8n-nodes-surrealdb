@@ -6,7 +6,6 @@ import type {
 import type { Surreal } from "surrealdb";
 import {
     formatArrayResult,
-    debugLog,
     createErrorResult,
 } from "../../../utilities";
 import {
@@ -18,7 +17,7 @@ import {
 } from "../../../GenericFunctions";
 import type { IOperationHandler } from "../../../types/operation.types";
 
-import { DEBUG } from "../../../debug";
+import { DEBUG, debugLog } from "../../../debug";
 
 /**
  * Implementation of the "Get All Records" operation

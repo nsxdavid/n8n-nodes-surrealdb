@@ -17,7 +17,6 @@ import { executeQueryWithRecovery } from "../../../errorHandling";
 import {
     formatSingleResult,
     formatArrayResult,
-    debugLog,
     createErrorResult,
 } from "../../../utilities";
 import {
@@ -27,7 +26,7 @@ import {
     ErrorCategory,
 } from "../../../errorHandling";
 
-import { DEBUG } from "../../../debug";
+import { DEBUG, debugLog } from "../../../debug";
 
 /**
  * Execute Query operation handler for Query resource
