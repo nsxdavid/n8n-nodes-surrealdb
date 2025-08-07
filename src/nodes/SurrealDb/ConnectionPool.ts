@@ -3,6 +3,7 @@ import type { ISurrealCredentials } from "./types/surrealDb.types";
 import { DEBUG } from "./debug";
 import {
     ErrorCategory,
+    EnhancedError,
     retryWithBackoff,
     DEFAULT_RETRY_CONFIG,
 } from "./errorHandling";
@@ -331,13 +332,13 @@ export class SurrealConnectionPool {
                     }
                     
                     // Re-throw with enhanced context
-                    const enhancedError = new Error(
+                    const enhancedError = new EnhancedError(
                         `Failed to create connection: ${createError instanceof Error ? createError.message : 'Unknown error'}`,
+                        ErrorCategory.CONNECTION_ERROR,
                     );
-                    (enhancedError as any).category = ErrorCategory.CONNECTION_ERROR;
-                    (enhancedError as any).poolKey = poolKey;
-                    (enhancedError as any).poolSize = pool.length;
-                    (enhancedError as any).maxConnections = this.config.maxConnections;
+                    enhancedError.poolKey = poolKey;
+                    enhancedError.poolSize = pool.length;
+                    enhancedError.maxConnections = this.config.maxConnections;
                     throw enhancedError;
                 }
             }
@@ -347,13 +348,13 @@ export class SurrealConnectionPool {
                 return await this.waitForConnection(poolKey);
             } catch (waitError) {
                 // Enhanced error handling for wait timeout
-                const enhancedError = new Error(
+                const enhancedError = new EnhancedError(
                     `Connection pool exhausted and timeout reached: ${waitError instanceof Error ? waitError.message : 'Unknown error'}`,
+                    ErrorCategory.TIMEOUT_ERROR,
                 );
-                (enhancedError as any).category = ErrorCategory.TIMEOUT_ERROR;
-                (enhancedError as any).poolKey = poolKey;
-                (enhancedError as any).poolSize = pool.length;
-                (enhancedError as any).activeConnections = pool.filter(e => e.inUse).length;
+                enhancedError.poolKey = poolKey;
+                enhancedError.poolSize = pool.length;
+                enhancedError.activeConnections = pool.filter(e => e.inUse).length;
                 throw enhancedError;
             }
         } catch (error) {
@@ -366,8 +367,12 @@ export class SurrealConnectionPool {
             }
             
             // Ensure error has proper categorization
-            if (!(error as any).category) {
-                (error as any).category = ErrorCategory.SYSTEM_ERROR;
+            if (!(error instanceof EnhancedError)) {
+                const enhancedError = new EnhancedError(
+                    error instanceof Error ? error.message : 'Unknown error',
+                    ErrorCategory.SYSTEM_ERROR,
+                );
+                throw enhancedError;
             }
             
             throw error;
@@ -466,11 +471,11 @@ export class SurrealConnectionPool {
                 }
             } catch (authError) {
                 // Enhanced authentication error
-                const enhancedError = new Error(
+                const enhancedError = new EnhancedError(
                     `Authentication failed for ${credentials.authentication} level: ${authError instanceof Error ? authError.message : 'Unknown error'}`,
+                    ErrorCategory.AUTHENTICATION_ERROR,
                 );
-                (enhancedError as any).category = ErrorCategory.AUTHENTICATION_ERROR;
-                (enhancedError as any).authentication = credentials.authentication;
+                enhancedError.authentication = credentials.authentication;
                 throw enhancedError;
             }
 
@@ -490,12 +495,12 @@ export class SurrealConnectionPool {
             await this.closeConnectionSafely(client, 'failed-connection');
             
             // Enhance error with context if not already enhanced
-            if (!(error as any).category) {
-                const enhancedError = new Error(
+            if (!(error instanceof EnhancedError)) {
+                const enhancedError = new EnhancedError(
                     `Connection creation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                    ErrorCategory.CONNECTION_ERROR,
                 );
-                (enhancedError as any).category = ErrorCategory.CONNECTION_ERROR;
-                (enhancedError as any).connectionString = credentials.connectionString?.substring(0, 50) + '...';
+                enhancedError.connectionString = credentials.connectionString?.substring(0, 50) + '...';
                 throw enhancedError;
             }
             

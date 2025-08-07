@@ -57,6 +57,28 @@ export interface IEnhancedError {
 }
 
 /**
+ * Enhanced error class with additional metadata
+ */
+export class EnhancedError extends Error {
+    category: ErrorCategory;
+    severity?: ErrorSeverity;
+    retryable?: boolean;
+    context?: Record<string, unknown>;
+    poolKey?: string;
+    poolSize?: number;
+    maxConnections?: number;
+    activeConnections?: number;
+    authentication?: string;
+    connectionString?: string;
+    
+    constructor(message: string, category: ErrorCategory = ErrorCategory.UNKNOWN_ERROR) {
+        super(message);
+        this.name = 'EnhancedError';
+        this.category = category;
+    }
+}
+
+/**
  * Retry configuration
  */
 export interface IRetryConfig {
