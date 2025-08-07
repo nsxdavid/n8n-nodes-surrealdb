@@ -1,5 +1,7 @@
 name: Release
 
+# This workflow publishes the package to NPM when a GitHub release is created
+# Requires NPM_TOKEN secret to be configured in repository settings
 on:
   release:
     types: [published]
