@@ -28,7 +28,7 @@
   "type": "commonjs",
   "scripts": {
     "build": "tsc && npm run assets",
-    "assets": "cp src/nodes/SurrealDb/*.svg src/nodes/SurrealDb/*.png dist/nodes/SurrealDb/ 2>/dev/null || true",
+    "assets": "copyfiles -f src/nodes/SurrealDb/*.svg src/nodes/SurrealDb/*.png dist/nodes/SurrealDb/",
     "dev": "tsc --watch",
     "lint": "eslint src",
     "format": "prettier src --write",
@@ -52,6 +52,7 @@
     "@types/request-promise-native": "^1.0.21",
     "@typescript-eslint/eslint-plugin": "^8.39.0",
     "@typescript-eslint/parser": "^8.39.0",
+    "copyfiles": "^2.4.1",
     "eslint": "^9.32.0",
     "eslint-plugin-n8n-nodes-base": "^1.16.3",
     "n8n": "^1.105.3",
