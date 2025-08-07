@@ -35,15 +35,15 @@ SELECT name, email, age, status FROM user WHERE age > 18 AND status = 'active' O
 - **Table**: `order`
 - **Fields**: `product.category, COUNT(*) as order_count, SUM(total) as total_sales`
 - **Group By**: `product.category`
-- **Where Conditions** (for filtering grouped results):
-- Field: `COUNT(*)`, Operator: `>`, Value: `5`
+- **Having Conditions** (for filtering grouped results):
+  - Field: `COUNT(*)`, Operator: `>`, Value: `5`
 - **Order By**:
   - Field: `total_sales`, Direction: `DESC`
 - **Limit**: `50`
 
 **Generated Query**:
 ```sql
-SELECT product.category, COUNT(*) as order_count, SUM(total) as total_sales FROM order GROUP BY product.category WHERE COUNT(*) > 5 ORDER BY total_sales DESC LIMIT 50
+SELECT product.category, COUNT(*) as order_count, SUM(total) as total_sales FROM order GROUP BY product.category HAVING COUNT(*) > 5 ORDER BY total_sales DESC LIMIT 50
 ```
 
 ### Example 3: Parameterized Date Range Query
