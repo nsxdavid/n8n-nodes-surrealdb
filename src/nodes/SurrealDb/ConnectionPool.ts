@@ -269,11 +269,14 @@ export class SurrealConnectionPool {
             if (availableEntry) {
                 availableEntry.inUse = true;
                 availableEntry.lastUsed = Date.now();
-                
+
                 // Validate the connection before returning it
                 try {
                     if (this.config.enableConnectionValidation) {
-                        await this.validateConnection(availableEntry.client, poolKey);
+                        await this.validateConnection(
+                            availableEntry.client,
+                            poolKey,
+                        );
                     }
                     return availableEntry.client;
                 } catch (validationError) {
@@ -281,19 +284,22 @@ export class SurrealConnectionPool {
                     availableEntry.isHealthy = false;
                     availableEntry.inUse = false;
                     availableEntry.errorCount++;
-                    
+
                     if (DEBUG) {
                         console.warn(
                             `[ConnectionPool] Existing connection validation failed for ${poolKey}, will create new one`,
                             validationError,
                         );
                     }
-                    
+
                     // Remove the unhealthy connection
                     const index = pool.indexOf(availableEntry);
                     if (index > -1) {
                         pool.splice(index, 1);
-                        await this.closeConnectionSafely(availableEntry.client, poolKey);
+                        await this.closeConnectionSafely(
+                            availableEntry.client,
+                            poolKey,
+                        );
                     }
                 }
             }
@@ -301,7 +307,8 @@ export class SurrealConnectionPool {
             // Create a new connection if we haven't reached the limit
             if (pool.length < this.config.maxConnections) {
                 try {
-                    const client = await this.createConnectionWithRetry(credentials);
+                    const client =
+                        await this.createConnectionWithRetry(credentials);
                     const entry: IPoolEntry = {
                         client,
                         lastUsed: Date.now(),
@@ -323,17 +330,17 @@ export class SurrealConnectionPool {
                 } catch (createError) {
                     // Enhanced error handling for connection creation failures
                     this.stats.connectionErrors++;
-                    
+
                     if (DEBUG) {
                         console.error(
                             `[ConnectionPool] Failed to create new connection for ${poolKey}:`,
                             createError,
                         );
                     }
-                    
+
                     // Re-throw with enhanced context
                     const enhancedError = new EnhancedError(
-                        `Failed to create connection: ${createError instanceof Error ? createError.message : 'Unknown error'}`,
+                        `Failed to create connection: ${createError instanceof Error ? createError.message : "Unknown error"}`,
                         ErrorCategory.CONNECTION_ERROR,
                     );
                     enhancedError.poolKey = poolKey;
@@ -349,12 +356,14 @@ export class SurrealConnectionPool {
             } catch (waitError) {
                 // Enhanced error handling for wait timeout
                 const enhancedError = new EnhancedError(
-                    `Connection pool exhausted and timeout reached: ${waitError instanceof Error ? waitError.message : 'Unknown error'}`,
+                    `Connection pool exhausted and timeout reached: ${waitError instanceof Error ? waitError.message : "Unknown error"}`,
                     ErrorCategory.TIMEOUT_ERROR,
                 );
                 enhancedError.poolKey = poolKey;
                 enhancedError.poolSize = pool.length;
-                enhancedError.activeConnections = pool.filter(e => e.inUse).length;
+                enhancedError.activeConnections = pool.filter(
+                    e => e.inUse,
+                ).length;
                 throw enhancedError;
             }
         } catch (error) {
@@ -365,16 +374,16 @@ export class SurrealConnectionPool {
                     error,
                 );
             }
-            
+
             // Ensure error has proper categorization
             if (!(error instanceof EnhancedError)) {
                 const enhancedError = new EnhancedError(
-                    error instanceof Error ? error.message : 'Unknown error',
+                    error instanceof Error ? error.message : "Unknown error",
                     ErrorCategory.SYSTEM_ERROR,
                 );
                 throw enhancedError;
             }
-            
+
             throw error;
         }
     }
@@ -421,16 +430,21 @@ export class SurrealConnectionPool {
             // Connect with timeout
             const connectTimeout = 10000; // 10 seconds
             const connectPromise = client.connect(credentials.connectionString);
-            
+
             // Create timeout with cleanup
             let timeoutHandle: NodeJS.Timeout | null = null;
             const timeoutPromise = new Promise<never>((_, reject) => {
                 timeoutHandle = setTimeout(
-                    () => reject(new Error(`Connection timeout after ${connectTimeout}ms`)),
+                    () =>
+                        reject(
+                            new Error(
+                                `Connection timeout after ${connectTimeout}ms`,
+                            ),
+                        ),
                     connectTimeout,
                 );
             });
-            
+
             try {
                 await Promise.race([connectPromise, timeoutPromise]);
             } finally {
@@ -472,7 +486,7 @@ export class SurrealConnectionPool {
             } catch (authError) {
                 // Enhanced authentication error
                 const enhancedError = new EnhancedError(
-                    `Authentication failed for ${credentials.authentication} level: ${authError instanceof Error ? authError.message : 'Unknown error'}`,
+                    `Authentication failed for ${credentials.authentication} level: ${authError instanceof Error ? authError.message : "Unknown error"}`,
                     ErrorCategory.AUTHENTICATION_ERROR,
                 );
                 enhancedError.authentication = credentials.authentication;
@@ -490,20 +504,21 @@ export class SurrealConnectionPool {
             return client;
         } catch (error) {
             this.stats.connectionErrors++;
-            
+
             // Ensure cleanup happens
-            await this.closeConnectionSafely(client, 'failed-connection');
-            
+            await this.closeConnectionSafely(client, "failed-connection");
+
             // Enhance error with context if not already enhanced
             if (!(error instanceof EnhancedError)) {
                 const enhancedError = new EnhancedError(
-                    `Connection creation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                    `Connection creation failed: ${error instanceof Error ? error.message : "Unknown error"}`,
                     ErrorCategory.CONNECTION_ERROR,
                 );
-                enhancedError.connectionString = credentials.connectionString?.substring(0, 50) + '...';
+                enhancedError.connectionString =
+                    credentials.connectionString?.substring(0, 50) + "...";
                 throw enhancedError;
             }
-            
+
             throw error;
         }
     }
@@ -553,7 +568,7 @@ export class SurrealConnectionPool {
         return new Promise((resolve, reject) => {
             let timeout: NodeJS.Timeout | null = null;
             let checkInterval: NodeJS.Timeout | null = null;
-            
+
             // Cleanup function to ensure all timers are cleared
             const cleanup = () => {
                 if (timeout) {
@@ -565,7 +580,7 @@ export class SurrealConnectionPool {
                     checkInterval = null;
                 }
             };
-            
+
             // Set up timeout
             timeout = setTimeout(() => {
                 cleanup();
@@ -583,7 +598,9 @@ export class SurrealConnectionPool {
                     if (!pool) {
                         cleanup();
                         reject(
-                            new Error(`Pool ${poolKey} was removed while waiting`),
+                            new Error(
+                                `Pool ${poolKey} was removed while waiting`,
+                            ),
                         );
                         return;
                     }
@@ -759,7 +776,7 @@ export class SurrealConnectionPool {
             // but don't expose it in plain text
             password: credentials.password || "",
         };
-        
+
         // Generate SHA-256 hash of the serialized credentials
         const hash = createHash("sha256");
         hash.update(JSON.stringify(keyObject));

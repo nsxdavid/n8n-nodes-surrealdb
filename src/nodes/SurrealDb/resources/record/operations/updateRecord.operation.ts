@@ -95,19 +95,14 @@ export const updateRecordOperation: IOperationHandler = {
                 ) as IDataObject;
                 const operations = setOperationsInput?.operations || [];
 
-                                    debugLog(
-                        "updateRecord",
-                        "setOperationsInput:",
-                        itemIndex,
-                        setOperationsInput,
-                    );
-                    debugLog(
-                        "updateRecord",
-                        "operations:",
-                        itemIndex,
-                        operations,
-                    );
-                                if (
+                debugLog(
+                    "updateRecord",
+                    "setOperationsInput:",
+                    itemIndex,
+                    setOperationsInput,
+                );
+                debugLog("updateRecord", "operations:", itemIndex, operations);
+                if (
                     !operations ||
                     !Array.isArray(operations) ||
                     operations.length === 0
@@ -199,13 +194,13 @@ export const updateRecordOperation: IOperationHandler = {
                 }
 
                 const queryResult = await client.query(query);
-                                    debugLog(
-                        "updateRecord",
-                        "Raw query result:",
-                        itemIndex,
-                        queryResult,
-                    );
-                                // SurrealDB query returns an array of results, we need to extract the actual updated record
+                debugLog(
+                    "updateRecord",
+                    "Raw query result:",
+                    itemIndex,
+                    queryResult,
+                );
+                // SurrealDB query returns an array of results, we need to extract the actual updated record
                 // The structure is typically: [{ result: [updatedRecord] }] or [[updatedRecord]]
                 if (queryResult && queryResult.length > 0) {
                     const firstResult = queryResult[0];

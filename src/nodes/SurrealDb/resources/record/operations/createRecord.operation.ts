@@ -87,34 +87,29 @@ export const createRecordOperation: IOperationHandler = {
 
             if (providedId && providedId.trim() !== "") {
                 debugLog(
-                        "createRecord",
-                        "Using provided ID",
-                        itemIndex,
-                        providedId,
-                    );
+                    "createRecord",
+                    "Using provided ID",
+                    itemIndex,
+                    providedId,
+                );
                 // Create the record ID with the provided ID
                 recordId = createRecordId(table, providedId.trim());
             } else {
                 // No ID provided, use only the table for auto-generation of ID by SurrealDB
                 debugLog(
-                        "createRecord",
-                        "No ID provided, using table name only for auto-ID generation",
-                        itemIndex,
-                    );
+                    "createRecord",
+                    "No ID provided, using table name only for auto-ID generation",
+                    itemIndex,
+                );
                 recordId = table;
             }
 
             // Get credentials to ensure they are configured
             await executeFunctions.getCredentials("surrealDbApi");
 
-                            debugLog("createRecord", "Record ID", itemIndex, recordId);
-                debugLog(
-                    "createRecord",
-                    "Data",
-                    itemIndex,
-                    JSON.stringify(data),
-                );
-                        // Create the record with enhanced error handling and retry logic
+            debugLog("createRecord", "Record ID", itemIndex, recordId);
+            debugLog("createRecord", "Data", itemIndex, JSON.stringify(data));
+            // Create the record with enhanced error handling and retry logic
             const result = await retryWithBackoff(
                 async () => {
                     return await client.create(
@@ -143,20 +138,20 @@ export const createRecordOperation: IOperationHandler = {
                 },
             );
 
-                            debugLog(
-                    "createRecord",
-                    "Raw creation result",
-                    itemIndex,
-                    JSON.stringify(result),
-                );
-                        // Return the raw SurrealDB response directly without transformation
+            debugLog(
+                "createRecord",
+                "Raw creation result",
+                itemIndex,
+                JSON.stringify(result),
+            );
+            // Return the raw SurrealDB response directly without transformation
             // This respects SurrealDB's native data format and ensures future compatibility
             debugLog(
-                    "createRecord",
-                    "Returning raw result",
-                    itemIndex,
-                    JSON.stringify(result),
-                );
+                "createRecord",
+                "Returning raw result",
+                itemIndex,
+                JSON.stringify(result),
+            );
 
             // Handle null/undefined result
             if (result === null || result === undefined) {
@@ -191,10 +186,10 @@ export const createRecordOperation: IOperationHandler = {
         }
 
         debugLog(
-                "createRecord",
-                `Completed, returning ${returnData.length} items`,
-                itemIndex,
-            );
+            "createRecord",
+            `Completed, returning ${returnData.length} items`,
+            itemIndex,
+        );
         return returnData;
     },
 };

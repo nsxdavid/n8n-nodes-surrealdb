@@ -12,7 +12,7 @@ import {
     buildCredentialsObject,
     checkQueryResult,
 } from "../../../GenericFunctions";
-import { addSuccessResult  } from "../../../utilities"
+import { addSuccessResult } from "../../../utilities";
 import type { IOperationHandler } from "../../../types/operation.types";
 
 import { DEBUG, debugLog } from "../../../debug";
@@ -213,10 +213,10 @@ export const createFieldOperation: IOperationHandler = {
         );
 
         debugLog(
-                "createField",
-                `Completed, returning ${returnData.length} items`,
-                itemIndex,
-            );
+            "createField",
+            `Completed, returning ${returnData.length} items`,
+            itemIndex,
+        );
         return returnData;
     },
 };

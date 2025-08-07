@@ -170,7 +170,6 @@ export function addErrorResult(
     );
 }
 
-
 /**
  * Validate connection pool configuration
  */

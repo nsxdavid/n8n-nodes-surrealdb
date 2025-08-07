@@ -70,10 +70,13 @@ export class EnhancedError extends Error {
     activeConnections?: number;
     authentication?: string;
     connectionString?: string;
-    
-    constructor(message: string, category: ErrorCategory = ErrorCategory.UNKNOWN_ERROR) {
+
+    constructor(
+        message: string,
+        category: ErrorCategory = ErrorCategory.UNKNOWN_ERROR,
+    ) {
         super(message);
-        this.name = 'EnhancedError';
+        this.name = "EnhancedError";
         this.category = category;
     }
 }

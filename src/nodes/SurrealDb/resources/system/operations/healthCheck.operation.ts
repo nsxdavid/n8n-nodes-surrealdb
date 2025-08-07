@@ -7,7 +7,7 @@ import type {
 import type { IOperationHandler } from "../../../types/operation.types";
 import type { Surreal } from "surrealdb";
 import { buildCredentialsObject } from "../../../GenericFunctions";
-import { addSuccessResult  } from "../../../utilities"
+import { addSuccessResult } from "../../../utilities";
 import { debugLog } from "../../../debug";
 
 /**
@@ -56,13 +56,13 @@ export const healthCheckOperation: IOperationHandler = {
             returnFullResponse: true,
         };
 
-                    debugLog(
-                "healthCheck",
-                "Performing health check",
-                itemIndex,
-                healthUrl,
-            );
-                try {
+        debugLog(
+            "healthCheck",
+            "Performing health check",
+            itemIndex,
+            healthUrl,
+        );
+        try {
             // Perform the health check request
             const response =
                 await executeFunctions.helpers.httpRequest(requestOptions);
@@ -84,11 +84,11 @@ export const healthCheckOperation: IOperationHandler = {
             // This is intentionally different from other operations because the purpose
             // of a health check is to report on status, not throw errors.
             debugLog(
-                    "healthCheck",
-                    "Health check failed",
-                    itemIndex,
-                    (error as Error).message,
-                );
+                "healthCheck",
+                "Health check failed",
+                itemIndex,
+                (error as Error).message,
+            );
 
             // Add unhealthy status result using the utility function
             addSuccessResult(
@@ -103,10 +103,10 @@ export const healthCheckOperation: IOperationHandler = {
         }
 
         debugLog(
-                "healthCheck",
-                `Completed, returning ${returnData.length} items`,
-                itemIndex,
-            );
+            "healthCheck",
+            `Completed, returning ${returnData.length} items`,
+            itemIndex,
+        );
         return returnData;
     },
 };

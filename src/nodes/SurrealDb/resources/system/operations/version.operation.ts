@@ -11,7 +11,7 @@ import {
     buildCredentialsObject,
     checkQueryResult,
 } from "../../../GenericFunctions";
-import { addSuccessResult  } from "../../../utilities"
+import { addSuccessResult } from "../../../utilities";
 import { debugLog } from "../../../debug";
 
 /**

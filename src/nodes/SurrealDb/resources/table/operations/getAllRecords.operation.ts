@@ -4,10 +4,7 @@ import type {
     INodeExecutionData,
 } from "n8n-workflow";
 import type { Surreal } from "surrealdb";
-import {
-    formatArrayResult,
-    createErrorResult,
-} from "../../../utilities";
+import { formatArrayResult, createErrorResult } from "../../../utilities";
 import {
     prepareSurrealQuery,
     validateRequiredField,
@@ -158,27 +155,27 @@ export const getAllRecordsOperation: IOperationHandler = {
             }
 
             debugLog(
-                    "getAllRecords",
-                    `Completed, returning ${returnData.length} items`,
-                    itemIndex,
-                );
+                "getAllRecords",
+                `Completed, returning ${returnData.length} items`,
+                itemIndex,
+            );
             return returnData;
         } catch (error) {
             if (executeFunctions.continueOnFail()) {
                 debugLog(
-                        "getAllRecords",
-                        "Error with continueOnFail enabled",
-                        itemIndex,
-                        error.message,
-                    );
-                return [createErrorResult(error, itemIndex)];
-            }
-            debugLog(
                     "getAllRecords",
-                    "Error, stopping execution",
+                    "Error with continueOnFail enabled",
                     itemIndex,
                     error.message,
                 );
+                return [createErrorResult(error, itemIndex)];
+            }
+            debugLog(
+                "getAllRecords",
+                "Error, stopping execution",
+                itemIndex,
+                error.message,
+            );
             throw error;
         }
     },

@@ -21,43 +21,45 @@ export async function handleFieldOperations(
     for (let i = 0; i < itemsLength; i++) {
         try {
             let operationResult: INodeExecutionData[];
-            
+
             switch (operation) {
                 case "createField":
                     operationResult = await createFieldOperation.execute(
-                            client,
-                            items,
-                            executeFunctions,
-                            i,
-                        );
+                        client,
+                        items,
+                        executeFunctions,
+                        i,
+                    );
                     break;
                 case "listFields":
                     operationResult = await listFieldsOperation.execute(
-                            client,
-                            items,
-                            executeFunctions,
-                            i,
-                        );
+                        client,
+                        items,
+                        executeFunctions,
+                        i,
+                    );
                     break;
                 case "deleteField":
                     operationResult = await deleteFieldOperation.execute(
-                            client,
-                            items,
-                            executeFunctions,
-                            i,
-                        );
+                        client,
+                        items,
+                        executeFunctions,
+                        i,
+                    );
                     break;
                 default:
                     throw new Error(
                         `The operation "${operation}" is not supported for the Field resource!`,
                     );
             }
-            
+
             // Use push with spread for better performance than array spread in loop
             returnData.push(...operationResult);
         } catch (error) {
             if (executeFunctions.continueOnFail()) {
-                returnData.push(createErrorResult(error as Error, i, operation));
+                returnData.push(
+                    createErrorResult(error as Error, i, operation),
+                );
                 continue;
             }
             throw error;

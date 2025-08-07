@@ -5,10 +5,7 @@ import type {
 } from "n8n-workflow";
 import { NodeOperationError } from "n8n-workflow";
 import type { Surreal } from "surrealdb";
-import {
-    formatArrayResult,
-    createErrorResult,
-} from "../../../utilities";
+import { formatArrayResult, createErrorResult } from "../../../utilities";
 import {
     validateRequiredField,
     validateAndParseData,
@@ -97,46 +94,31 @@ export const updateAllRecordsOperation: IOperationHandler = {
                 options,
             );
 
-                            debugLog(
-                    "updateAllRecords",
-                    "Original query",
-                    itemIndex,
-                    query,
-                );
-                debugLog(
-                    "updateAllRecords",
-                    "Data for update",
-                    itemIndex,
-                    data,
-                );
-                debugLog(
-                    "updateAllRecords",
-                    "Authentication",
-                    itemIndex,
-                    resolvedCredentials.authentication,
-                );
-                debugLog(
-                    "updateAllRecords",
-                    "Namespace",
-                    itemIndex,
-                    resolvedCredentials.namespace,
-                );
-                debugLog(
-                    "updateAllRecords",
-                    "Database",
-                    itemIndex,
-                    resolvedCredentials.database,
-                );
-                        // Prepare the query based on authentication type
+            debugLog("updateAllRecords", "Original query", itemIndex, query);
+            debugLog("updateAllRecords", "Data for update", itemIndex, data);
+            debugLog(
+                "updateAllRecords",
+                "Authentication",
+                itemIndex,
+                resolvedCredentials.authentication,
+            );
+            debugLog(
+                "updateAllRecords",
+                "Namespace",
+                itemIndex,
+                resolvedCredentials.namespace,
+            );
+            debugLog(
+                "updateAllRecords",
+                "Database",
+                itemIndex,
+                resolvedCredentials.database,
+            );
+            // Prepare the query based on authentication type
             const finalQuery = prepareSurrealQuery(query, resolvedCredentials);
 
-                            debugLog(
-                    "updateAllRecords",
-                    "Final query",
-                    itemIndex,
-                    finalQuery,
-                );
-                        // Execute the query
+            debugLog("updateAllRecords", "Final query", itemIndex, finalQuery);
+            // Execute the query
             const result = await client.query<[unknown[]]>(finalQuery, {
                 data,
             });
@@ -162,13 +144,13 @@ export const updateAllRecordsOperation: IOperationHandler = {
                 }
             }
 
-                            debugLog(
-                    "updateAllRecords",
-                    "Raw query result",
-                    itemIndex,
-                    JSON.stringify(result),
-                );
-                        // Find the first non-null array in the result
+            debugLog(
+                "updateAllRecords",
+                "Raw query result",
+                itemIndex,
+                JSON.stringify(result),
+            );
+            // Find the first non-null array in the result
             const recordsArray = Array.isArray(result)
                 ? result.find(item => Array.isArray(item))
                 : null;
@@ -189,27 +171,27 @@ export const updateAllRecordsOperation: IOperationHandler = {
             }
 
             debugLog(
-                    "updateAllRecords",
-                    `Completed, returning ${returnData.length} items`,
-                    itemIndex,
-                );
+                "updateAllRecords",
+                `Completed, returning ${returnData.length} items`,
+                itemIndex,
+            );
             return returnData;
         } catch (error) {
             if (executeFunctions.continueOnFail()) {
                 debugLog(
-                        "updateAllRecords",
-                        "Error with continueOnFail enabled",
-                        itemIndex,
-                        error.message,
-                    );
-                return [createErrorResult(error, itemIndex)];
-            }
-            debugLog(
                     "updateAllRecords",
-                    "Error, stopping execution",
+                    "Error with continueOnFail enabled",
                     itemIndex,
                     error.message,
                 );
+                return [createErrorResult(error, itemIndex)];
+            }
+            debugLog(
+                "updateAllRecords",
+                "Error, stopping execution",
+                itemIndex,
+                error.message,
+            );
             throw error;
         }
     },

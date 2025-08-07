@@ -5,10 +5,7 @@ import type {
 } from "n8n-workflow";
 import { NodeOperationError } from "n8n-workflow";
 import type { Surreal } from "surrealdb";
-import {
-    formatArrayResult,
-    createErrorResult,
-} from "../../../utilities";
+import { formatArrayResult, createErrorResult } from "../../../utilities";
 import {
     prepareSurrealQuery,
     validateRequiredField,
@@ -102,13 +99,8 @@ export const deleteAllRecordsOperation: IOperationHandler = {
             // Prepare the query based on authentication type
             const finalQuery = prepareSurrealQuery(query, resolvedCredentials);
 
-                            debugLog(
-                    "deleteAllRecords",
-                    "Final query",
-                    itemIndex,
-                    finalQuery,
-                );
-                        // Execute the query
+            debugLog("deleteAllRecords", "Final query", itemIndex, finalQuery);
+            // Execute the query
             const result = await client.query<[unknown[]]>(finalQuery);
 
             // Check for query errors
@@ -162,27 +154,27 @@ export const deleteAllRecordsOperation: IOperationHandler = {
             }
 
             debugLog(
-                    "deleteAllRecords",
-                    `Completed, returning ${returnData.length} items`,
-                    itemIndex,
-                );
+                "deleteAllRecords",
+                `Completed, returning ${returnData.length} items`,
+                itemIndex,
+            );
             return returnData;
         } catch (error) {
             if (executeFunctions.continueOnFail()) {
                 debugLog(
-                        "deleteAllRecords",
-                        "Error with continueOnFail enabled",
-                        itemIndex,
-                        error.message,
-                    );
-                return [createErrorResult(error, itemIndex)];
-            }
-            debugLog(
                     "deleteAllRecords",
-                    "Error, stopping execution",
+                    "Error with continueOnFail enabled",
                     itemIndex,
                     error.message,
                 );
+                return [createErrorResult(error, itemIndex)];
+            }
+            debugLog(
+                "deleteAllRecords",
+                "Error, stopping execution",
+                itemIndex,
+                error.message,
+            );
             throw error;
         }
     },

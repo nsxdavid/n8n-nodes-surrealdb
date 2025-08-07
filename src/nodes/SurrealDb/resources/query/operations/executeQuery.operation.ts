@@ -111,19 +111,9 @@ export const executeQueryOperation: IOperationHandler = {
             // Prepare the query based on authentication type
             finalQuery = prepareSurrealQuery(finalQuery, resolvedCredentials);
 
-                            debugLog(
-                    "executeQuery",
-                    "Prepared query",
-                    itemIndex,
-                    finalQuery,
-                );
-                debugLog(
-                    "executeQuery",
-                    "Query parameters",
-                    itemIndex,
-                    parameters,
-                );
-                        // Execute the query with enhanced error handling and recovery
+            debugLog("executeQuery", "Prepared query", itemIndex, finalQuery);
+            debugLog("executeQuery", "Query parameters", itemIndex, parameters);
+            // Execute the query with enhanced error handling and recovery
             const result = await retryWithBackoff(
                 async () => {
                     return await executeQueryWithRecovery<[unknown[]]>(
@@ -179,13 +169,13 @@ export const executeQueryOperation: IOperationHandler = {
                 }
             }
 
-                            debugLog(
-                    "executeQuery",
-                    "Raw query result",
-                    itemIndex,
-                    JSON.stringify(result),
-                );
-                        // The result is an array of arrays, where each array contains the results of a statement
+            debugLog(
+                "executeQuery",
+                "Raw query result",
+                itemIndex,
+                JSON.stringify(result),
+            );
+            // The result is an array of arrays, where each array contains the results of a statement
             if (Array.isArray(result)) {
                 // Process each result set, filtering out null values
                 for (const resultSet of result.filter(item => item !== null)) {
@@ -241,10 +231,10 @@ export const executeQueryOperation: IOperationHandler = {
         }
 
         debugLog(
-                "executeQuery",
-                `Completed, returning ${returnData.length} items`,
-                itemIndex,
-            );
+            "executeQuery",
+            `Completed, returning ${returnData.length} items`,
+            itemIndex,
+        );
         return returnData;
     },
 };

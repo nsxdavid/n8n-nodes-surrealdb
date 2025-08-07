@@ -34,11 +34,11 @@ export const batchDeleteOperation: IOperationHandler = {
                 itemIndex,
             ) as string;
             debugLog(
-                    "batchDelete",
-                    "Retrieved table parameter",
-                    itemIndex,
-                    table,
-                );
+                "batchDelete",
+                "Retrieved table parameter",
+                itemIndex,
+                table,
+            );
 
             // Clean and standardize the table name
             table = cleanTableName(table);
@@ -48,13 +48,13 @@ export const batchDeleteOperation: IOperationHandler = {
                 "ids",
                 itemIndex,
             ) as string;
-                            debugLog(
-                    "batchDelete",
-                    "Retrieved ids parameter",
-                    itemIndex,
-                    idsInput,
-                );
-                        // Validate required field
+            debugLog(
+                "batchDelete",
+                "Retrieved ids parameter",
+                itemIndex,
+                idsInput,
+            );
+            // Validate required field
             if (!idsInput || idsInput.trim() === "") {
                 throw new Error("Record IDs are required");
             }
@@ -78,13 +78,13 @@ export const batchDeleteOperation: IOperationHandler = {
                 }
             });
 
-                            debugLog(
-                    "batchDelete",
-                    "Processed record IDs",
-                    itemIndex,
-                    processedIds,
-                );
-                        // Get batch configuration
+            debugLog(
+                "batchDelete",
+                "Processed record IDs",
+                itemIndex,
+                processedIds,
+            );
+            // Get batch configuration
             const batchConfigInput = executeFunctions.getNodeParameter(
                 "batchConfig",
                 itemIndex,
@@ -106,13 +106,13 @@ export const batchDeleteOperation: IOperationHandler = {
                 progressTracking: batchConfigInput.progressTracking !== false,
             };
 
-                            debugLog(
-                    "batchDelete",
-                    "Batch configuration",
-                    itemIndex,
-                    batchConfig,
-                );
-                        // Split IDs into batches
+            debugLog(
+                "batchDelete",
+                "Batch configuration",
+                itemIndex,
+                batchConfig,
+            );
+            // Split IDs into batches
             const batches = splitIntoBatches(
                 processedIds,
                 batchConfig.batchSize,

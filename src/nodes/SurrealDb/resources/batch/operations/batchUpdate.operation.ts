@@ -35,11 +35,11 @@ export const batchUpdateOperation: IOperationHandler = {
                 itemIndex,
             ) as string;
             debugLog(
-                    "batchUpdate",
-                    "Retrieved table parameter",
-                    itemIndex,
-                    table,
-                );
+                "batchUpdate",
+                "Retrieved table parameter",
+                itemIndex,
+                table,
+            );
 
             // Clean and standardize the table name
             table = cleanTableName(table);
@@ -49,13 +49,13 @@ export const batchUpdateOperation: IOperationHandler = {
                 "data",
                 itemIndex,
             );
-                            debugLog(
-                    "batchUpdate",
-                    "Retrieved data parameter raw value",
-                    itemIndex,
-                    dataInput,
-                );
-                        // Validate required field
+            debugLog(
+                "batchUpdate",
+                "Retrieved data parameter raw value",
+                itemIndex,
+                dataInput,
+            );
+            // Validate required field
             if (
                 dataInput === undefined ||
                 dataInput === null ||
@@ -118,13 +118,13 @@ export const batchUpdateOperation: IOperationHandler = {
                 progressTracking: batchConfigInput.progressTracking !== false,
             };
 
-                            debugLog(
-                    "batchUpdate",
-                    "Batch configuration",
-                    itemIndex,
-                    batchConfig,
-                );
-                        // Split data into batches
+            debugLog(
+                "batchUpdate",
+                "Batch configuration",
+                itemIndex,
+                batchConfig,
+            );
+            // Split data into batches
             const batches = splitIntoBatches(data, batchConfig.batchSize);
 
             if (DEBUG) {

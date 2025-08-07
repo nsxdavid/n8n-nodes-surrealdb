@@ -11,7 +11,7 @@ import {
     buildCredentialsObject,
     checkQueryResult,
 } from "../../../GenericFunctions";
-import { addSuccessResult  } from "../../../utilities"
+import { addSuccessResult } from "../../../utilities";
 import type { IOperationHandler } from "../../../types/operation.types";
 
 import { DEBUG, debugLog } from "../../../debug";
@@ -154,10 +154,10 @@ export const dropIndexOperation: IOperationHandler = {
         }
 
         debugLog(
-                "dropIndex",
-                `Completed, returning ${returnData.length} items`,
-                itemIndex,
-            );
+            "dropIndex",
+            `Completed, returning ${returnData.length} items`,
+            itemIndex,
+        );
         return returnData;
     },
 };

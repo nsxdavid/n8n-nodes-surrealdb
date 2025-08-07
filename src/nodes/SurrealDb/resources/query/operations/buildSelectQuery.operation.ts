@@ -49,23 +49,48 @@ function buildWhereClause(conditions: WhereCondition[]): string {
     }
 
     const clauses: string[] = [];
-    
+
     // Valid SurrealQL operators to prevent injection
     const validOperators = [
-        "=", "!=", "<>", "<", ">", "<=", ">=",
-        "IN", "NOT IN",
-        "IS NULL", "IS NOT NULL", "IS", "IS NOT",
-        "CONTAINS", "!CONTAINS", "CONTAINSALL", "CONTAINSANY", "CONTAINSNONE",
-        "INSIDE", "!INSIDE", "NOTINSIDE", "ALLINSIDE", "ANYINSIDE", "NONEINSIDE",
-        "OUTSIDE", "INTERSECTS",
-        "MATCHES", "~", "!~", "?~", "*~"
+        "=",
+        "!=",
+        "<>",
+        "<",
+        ">",
+        "<=",
+        ">=",
+        "IN",
+        "NOT IN",
+        "IS NULL",
+        "IS NOT NULL",
+        "IS",
+        "IS NOT",
+        "CONTAINS",
+        "!CONTAINS",
+        "CONTAINSALL",
+        "CONTAINSANY",
+        "CONTAINSNONE",
+        "INSIDE",
+        "!INSIDE",
+        "NOTINSIDE",
+        "ALLINSIDE",
+        "ANYINSIDE",
+        "NONEINSIDE",
+        "OUTSIDE",
+        "INTERSECTS",
+        "MATCHES",
+        "~",
+        "!~",
+        "?~",
+        "*~",
     ];
-    
+
     // Pattern to validate SurrealQL field names
     // Allows: table.field, array[index], field->relation, field.*.nested, @field
     // SurrealQL supports more complex path expressions than SQL
-    const fieldNamePattern = /^[@]?[a-zA-Z_][a-zA-Z0-9_]*(\[[0-9]+\]|\[\*\]|\[\$[a-zA-Z_][a-zA-Z0-9_]*\])*([->.][a-zA-Z_][a-zA-Z0-9_]*(\[[0-9]+\]|\[\*\]|\[\$[a-zA-Z_][a-zA-Z0-9_]*\])*)*$/;
-    
+    const fieldNamePattern =
+        /^[@]?[a-zA-Z_][a-zA-Z0-9_]*(\[[0-9]+\]|\[\*\]|\[\$[a-zA-Z_][a-zA-Z0-9_]*\])*([->.][a-zA-Z_][a-zA-Z0-9_]*(\[[0-9]+\]|\[\*\]|\[\$[a-zA-Z_][a-zA-Z0-9_]*\])*)*$/;
+
     // Pattern to validate parameter names (must start with $)
     const parameterPattern = /^\$[a-zA-Z_][a-zA-Z0-9_]*$/;
 
@@ -75,21 +100,25 @@ function buildWhereClause(conditions: WhereCondition[]): string {
         if (!condition.field || !condition.operator) {
             continue;
         }
-        
+
         // Validate field name to prevent SurrealQL injection
         const fieldName = condition.field.trim();
         if (!fieldNamePattern.test(fieldName)) {
             if (DEBUG) {
-                console.warn(`[buildWhereClause] Invalid field name: ${fieldName}`);
+                console.warn(
+                    `[buildWhereClause] Invalid field name: ${fieldName}`,
+                );
             }
             continue;
         }
-        
+
         // Validate operator to prevent SurrealQL injection
         const operator = condition.operator.trim().toUpperCase();
         if (!validOperators.includes(operator)) {
             if (DEBUG) {
-                console.warn(`[buildWhereClause] Invalid operator: ${condition.operator}`);
+                console.warn(
+                    `[buildWhereClause] Invalid operator: ${condition.operator}`,
+                );
             }
             continue;
         }
@@ -107,7 +136,9 @@ function buildWhereClause(conditions: WhereCondition[]): string {
                 // Validate parameter name
                 if (!parameterPattern.test(condition.value)) {
                     if (DEBUG) {
-                        console.warn(`[buildWhereClause] Invalid parameter name: ${condition.value}`);
+                        console.warn(
+                            `[buildWhereClause] Invalid parameter name: ${condition.value}`,
+                        );
                     }
                     continue;
                 }
@@ -145,13 +176,14 @@ function buildOrderByClause(conditions: OrderByCondition[]): string {
     }
 
     const clauses: string[] = [];
-    
+
     // Valid SurrealQL sort directions
     const validDirections = ["ASC", "DESC", "ASCENDING", "DESCENDING"];
-    
+
     // Pattern to validate SurrealQL field names for ORDER BY
     // Allows: field, table.field, field->relation, @field
-    const fieldNamePattern = /^[@]?[a-zA-Z_][a-zA-Z0-9_]*([->.][a-zA-Z_][a-zA-Z0-9_]*)*$/;
+    const fieldNamePattern =
+        /^[@]?[a-zA-Z_][a-zA-Z0-9_]*([->.][a-zA-Z_][a-zA-Z0-9_]*)*$/;
 
     for (const condition of conditions) {
         if (condition.field && condition.direction) {
@@ -160,24 +192,31 @@ function buildOrderByClause(conditions: OrderByCondition[]): string {
             if (!fieldNamePattern.test(fieldName)) {
                 // Skip invalid field names or throw an error
                 if (DEBUG) {
-                    console.warn(`[buildOrderByClause] Invalid field name: ${fieldName}`);
+                    console.warn(
+                        `[buildOrderByClause] Invalid field name: ${fieldName}`,
+                    );
                 }
                 continue;
             }
-            
+
             // Validate and normalize direction
             const direction = condition.direction.toUpperCase().trim();
             if (!validDirections.includes(direction)) {
                 // Skip invalid directions or default to ASC
                 if (DEBUG) {
-                    console.warn(`[buildOrderByClause] Invalid sort direction: ${condition.direction}, defaulting to ASC`);
+                    console.warn(
+                        `[buildOrderByClause] Invalid sort direction: ${condition.direction}, defaulting to ASC`,
+                    );
                 }
                 clauses.push(`${fieldName} ASC`);
             } else {
                 // Normalize direction to ASC/DESC
-                const normalizedDirection = direction === "ASCENDING" ? "ASC" : 
-                                           direction === "DESCENDING" ? "DESC" : 
-                                           direction;
+                const normalizedDirection =
+                    direction === "ASCENDING"
+                        ? "ASC"
+                        : direction === "DESCENDING"
+                          ? "DESC"
+                          : direction;
                 clauses.push(`${fieldName} ${normalizedDirection}`);
             }
         }
@@ -325,19 +364,19 @@ export const buildSelectQueryOperation: IOperationHandler = {
             // Prepare the query based on authentication type
             const finalQuery = prepareSurrealQuery(query, resolvedCredentials);
 
-                            debugLog(
-                    "buildSelectQuery",
-                    "Generated query",
-                    itemIndex,
-                    finalQuery,
-                );
-                debugLog(
-                    "buildSelectQuery",
-                    "Query parameters",
-                    itemIndex,
-                    parameters,
-                );
-                        // Execute the query with enhanced error handling and recovery
+            debugLog(
+                "buildSelectQuery",
+                "Generated query",
+                itemIndex,
+                finalQuery,
+            );
+            debugLog(
+                "buildSelectQuery",
+                "Query parameters",
+                itemIndex,
+                parameters,
+            );
+            // Execute the query with enhanced error handling and recovery
             const result = await retryWithBackoff(
                 async () => {
                     return await executeQueryWithRecovery<[unknown[]]>(
@@ -398,13 +437,13 @@ export const buildSelectQueryOperation: IOperationHandler = {
                 }
             }
 
-                            debugLog(
-                    "buildSelectQuery",
-                    "Raw query result",
-                    itemIndex,
-                    JSON.stringify(result),
-                );
-                        // Process the results
+            debugLog(
+                "buildSelectQuery",
+                "Raw query result",
+                itemIndex,
+                JSON.stringify(result),
+            );
+            // Process the results
             if (Array.isArray(result)) {
                 // Process each result set, filtering out null values
                 for (const resultSet of result.filter(item => item !== null)) {
@@ -482,10 +521,10 @@ export const buildSelectQueryOperation: IOperationHandler = {
         }
 
         debugLog(
-                "buildSelectQuery",
-                `Completed, returning ${returnData.length} items`,
-                itemIndex,
-            );
+            "buildSelectQuery",
+            `Completed, returning ${returnData.length} items`,
+            itemIndex,
+        );
         return returnData;
     },
 };

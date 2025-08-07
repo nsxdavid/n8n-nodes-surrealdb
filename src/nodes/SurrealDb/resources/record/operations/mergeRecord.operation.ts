@@ -117,11 +117,11 @@ export const mergeRecordOperation: IOperationHandler = {
             // Return the raw SurrealDB response directly without transformation
             // This respects SurrealDB's native data format and ensures future compatibility
             debugLog(
-                    "mergeRecord",
-                    "Raw result",
-                    itemIndex,
-                    JSON.stringify(result),
-                );
+                "mergeRecord",
+                "Raw result",
+                itemIndex,
+                JSON.stringify(result),
+            );
 
             returnData.push({
                 json: result as unknown as IDataObject,

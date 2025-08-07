@@ -60,8 +60,8 @@ export const deleteTableOperation: IOperationHandler = {
         const query = `REMOVE TABLE ${table}`;
         const preparedQuery = prepareSurrealQuery(query, resolvedCredentials);
 
-                    debugLog("deleteTable", "Query", itemIndex, preparedQuery);
-                // Execute the query
+        debugLog("deleteTable", "Query", itemIndex, preparedQuery);
+        // Execute the query
 
         const result = await client.query(preparedQuery);
 
@@ -86,13 +86,13 @@ export const deleteTableOperation: IOperationHandler = {
             }
         }
 
-                    debugLog(
-                "deleteTable",
-                "Raw query result",
-                itemIndex,
-                JSON.stringify(result),
-            );
-                // For DELETE TABLE operations, SurrealDB typically returns [null]
+        debugLog(
+            "deleteTable",
+            "Raw query result",
+            itemIndex,
+            JSON.stringify(result),
+        );
+        // For DELETE TABLE operations, SurrealDB typically returns [null]
         // We need to ensure we always return a valid json property for n8n
         returnData.push({
             json: {}, // Empty object is the minimal valid json property

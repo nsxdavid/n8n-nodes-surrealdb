@@ -120,40 +120,40 @@ export const getManyOperation: IOperationHandler = {
                 options,
             );
 
-                            debugLog("getMany", "Original query", itemIndex, query);
-                debugLog(
-                    "getMany",
-                    "Authentication type",
-                    itemIndex,
-                    resolvedCredentials.authentication,
-                );
-                debugLog(
-                    "getMany",
-                    "Namespace",
-                    itemIndex,
-                    resolvedCredentials.namespace,
-                );
-                debugLog(
-                    "getMany",
-                    "Database",
-                    itemIndex,
-                    resolvedCredentials.database,
-                );
-                debugLog("getMany", "Record IDs", itemIndex, recordIdList);
-                        // Prepare the query based on authentication type
+            debugLog("getMany", "Original query", itemIndex, query);
+            debugLog(
+                "getMany",
+                "Authentication type",
+                itemIndex,
+                resolvedCredentials.authentication,
+            );
+            debugLog(
+                "getMany",
+                "Namespace",
+                itemIndex,
+                resolvedCredentials.namespace,
+            );
+            debugLog(
+                "getMany",
+                "Database",
+                itemIndex,
+                resolvedCredentials.database,
+            );
+            debugLog("getMany", "Record IDs", itemIndex, recordIdList);
+            // Prepare the query based on authentication type
             query = prepareSurrealQuery(query, resolvedCredentials);
 
-                            debugLog("getMany", "Modified query", itemIndex, query);
-                        // Execute the query (no parameters needed for IDs now)
+            debugLog("getMany", "Modified query", itemIndex, query);
+            // Execute the query (no parameters needed for IDs now)
             const result = await client.query<[unknown[]]>(query);
 
-                            debugLog(
-                    "getMany",
-                    "Raw query result",
-                    itemIndex,
-                    JSON.stringify(result),
-                );
-                        // Check for errors in the result
+            debugLog(
+                "getMany",
+                "Raw query result",
+                itemIndex,
+                JSON.stringify(result),
+            );
+            // Check for errors in the result
             if (result === null || result === undefined) {
                 throw new NodeOperationError(
                     executeFunctions.getNode(),

@@ -94,29 +94,29 @@ export const deleteRecordOperation: IOperationHandler = {
             // Handle errors based on continueOnFail setting
             if (executeFunctions.continueOnFail()) {
                 debugLog(
-                        "deleteRecord",
-                        "Error with continueOnFail enabled",
-                        itemIndex,
-                        error.message,
-                    );
+                    "deleteRecord",
+                    "Error with continueOnFail enabled",
+                    itemIndex,
+                    error.message,
+                );
                 addErrorResult(returnData, error, itemIndex);
             } else {
                 // If continueOnFail is not enabled, re-throw the error
                 debugLog(
-                        "deleteRecord",
-                        "Error, stopping execution",
-                        itemIndex,
-                        error.message,
-                    );
+                    "deleteRecord",
+                    "Error, stopping execution",
+                    itemIndex,
+                    error.message,
+                );
                 throw error;
             }
         }
 
         debugLog(
-                "deleteRecord",
-                `Completed, returning ${returnData.length} items`,
-                itemIndex,
-            );
+            "deleteRecord",
+            `Completed, returning ${returnData.length} items`,
+            itemIndex,
+        );
         return returnData;
     },
 };

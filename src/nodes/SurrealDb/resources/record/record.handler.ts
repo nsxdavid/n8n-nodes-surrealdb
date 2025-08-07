@@ -24,7 +24,7 @@ export async function handleRecordOperations(
     for (let i = 0; i < itemsLength; i++) {
         try {
             let operationResult: INodeExecutionData[];
-            
+
             switch (operation) {
                 case "createRecord":
                     operationResult = await createRecordOperation.execute(
@@ -79,12 +79,14 @@ export async function handleRecordOperations(
                         `The operation "${operation}" is not supported for the Record resource!`,
                     );
             }
-            
+
             // Use push with spread for better performance than array spread in loop
             returnData.push(...operationResult);
         } catch (error) {
             if (executeFunctions.continueOnFail()) {
-                returnData.push(createErrorResult(error as Error, i, operation));
+                returnData.push(
+                    createErrorResult(error as Error, i, operation),
+                );
                 continue;
             }
             throw error;

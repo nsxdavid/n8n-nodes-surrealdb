@@ -95,8 +95,8 @@ export const createTableOperation: IOperationHandler = {
 
         const preparedQuery = prepareSurrealQuery(query, resolvedCredentials);
 
-                    debugLog("createTable", "Query", itemIndex, preparedQuery);
-                // Execute the query
+        debugLog("createTable", "Query", itemIndex, preparedQuery);
+        // Execute the query
 
         const result = await client.query(preparedQuery);
 
@@ -121,13 +121,13 @@ export const createTableOperation: IOperationHandler = {
             }
         }
 
-                    debugLog(
-                "createTable",
-                "Raw query result",
-                itemIndex,
-                JSON.stringify(result),
-            );
-                // For CREATE TABLE operations, SurrealDB typically returns [null]
+        debugLog(
+            "createTable",
+            "Raw query result",
+            itemIndex,
+            JSON.stringify(result),
+        );
+        // For CREATE TABLE operations, SurrealDB typically returns [null]
         // We need to ensure we always return a valid json property for n8n
         returnData.push({
             json: {}, // Empty object is the minimal valid json property
