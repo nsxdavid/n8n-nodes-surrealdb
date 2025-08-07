@@ -42,7 +42,7 @@ interface OrderByCondition {
 }
 
 /**
- * Build a WHERE clause from conditions
+ * Build a WHERE clause from conditions with SurrealQL injection protection
  */
 function buildWhereClause(conditions: WhereCondition[]): string {
     if (!conditions || conditions.length === 0) {
@@ -50,6 +50,25 @@ function buildWhereClause(conditions: WhereCondition[]): string {
     }
 
     const clauses: string[] = [];
+    
+    // Valid SurrealQL operators to prevent injection
+    const validOperators = [
+        "=", "!=", "<>", "<", ">", "<=", ">=",
+        "IN", "NOT IN",
+        "IS NULL", "IS NOT NULL", "IS", "IS NOT",
+        "CONTAINS", "!CONTAINS", "CONTAINSALL", "CONTAINSANY", "CONTAINSNONE",
+        "INSIDE", "!INSIDE", "NOTINSIDE", "ALLINSIDE", "ANYINSIDE", "NONEINSIDE",
+        "OUTSIDE", "INTERSECTS",
+        "MATCHES", "~", "!~", "?~", "*~"
+    ];
+    
+    // Pattern to validate SurrealQL field names
+    // Allows: table.field, array[index], field->relation, field.*.nested, @field
+    // SurrealQL supports more complex path expressions than SQL
+    const fieldNamePattern = /^[@]?[a-zA-Z_][a-zA-Z0-9_]*(\[[0-9]+\]|\[\*\]|\[\$[a-zA-Z_][a-zA-Z0-9_]*\])*([->.][a-zA-Z_][a-zA-Z0-9_]*(\[[0-9]+\]|\[\*\]|\[\$[a-zA-Z_][a-zA-Z0-9_]*\])*)*$/;
+    
+    // Pattern to validate parameter names (must start with $)
+    const parameterPattern = /^\$[a-zA-Z_][a-zA-Z0-9_]*$/;
 
     for (let i = 0; i < conditions.length; i++) {
         const condition = conditions[i];
@@ -57,17 +76,42 @@ function buildWhereClause(conditions: WhereCondition[]): string {
         if (!condition.field || !condition.operator) {
             continue;
         }
+        
+        // Validate field name to prevent SQL injection
+        const fieldName = condition.field.trim();
+        if (!fieldNamePattern.test(fieldName)) {
+            if (DEBUG) {
+                console.warn(`[buildWhereClause] Invalid field name: ${fieldName}`);
+            }
+            continue;
+        }
+        
+        // Validate operator to prevent SQL injection
+        const operator = condition.operator.trim().toUpperCase();
+        if (!validOperators.includes(operator)) {
+            if (DEBUG) {
+                console.warn(`[buildWhereClause] Invalid operator: ${condition.operator}`);
+            }
+            continue;
+        }
 
-        let clause = `${condition.field} ${condition.operator}`;
+        let clause = `${fieldName} ${operator}`;
 
         // Add value for operators that need it
         if (
             condition.value !== undefined &&
             condition.value !== "" &&
-            !["IS NULL", "IS NOT NULL"].includes(condition.operator)
+            !["IS NULL", "IS NOT NULL"].includes(operator)
         ) {
             // Check if the value looks like a parameter
             if (condition.value.startsWith("$")) {
+                // Validate parameter name
+                if (!parameterPattern.test(condition.value)) {
+                    if (DEBUG) {
+                        console.warn(`[buildWhereClause] Invalid parameter name: ${condition.value}`);
+                    }
+                    continue;
+                }
                 clause += ` ${condition.value}`;
             } else {
                 // Try to determine if it's a number, boolean, or string
@@ -80,7 +124,8 @@ function buildWhereClause(conditions: WhereCondition[]): string {
                 ) {
                     clause += ` ${trimmedValue}`;
                 } else {
-                    // Treat as string, wrap in quotes
+                    // Treat as string, wrap in quotes and escape properly
+                    // Double the backslashes and escape single quotes
                     clause += ` '${condition.value.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`;
                 }
             }
@@ -105,9 +150,9 @@ function buildOrderByClause(conditions: OrderByCondition[]): string {
     // Valid SQL sort directions
     const validDirections = ["ASC", "DESC", "ASCENDING", "DESCENDING"];
     
-    // Pattern to validate field names (alphanumeric, underscore, dot for nested fields)
-    // This allows table.field notation and basic field names
-    const fieldNamePattern = /^[a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)*$/;
+    // Pattern to validate SurrealQL field names for ORDER BY
+    // Allows: field, table.field, field->relation, @field
+    const fieldNamePattern = /^[@]?[a-zA-Z_][a-zA-Z0-9_]*([->.][a-zA-Z_][a-zA-Z0-9_]*)*$/;
 
     for (const condition of conditions) {
         if (condition.field && condition.direction) {
