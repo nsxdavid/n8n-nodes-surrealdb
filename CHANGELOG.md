@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_Note: This release includes significant improvements contributed by the SurrealDB team through their fork of this project._
+
+### Added
+- **Enhanced Query Builder** _(contributed by SurrealDB)_: Added a visual interface for building SELECT queries with support for WHERE, ORDER BY, GROUP BY, LIMIT, START, and SPLIT ON clauses. Features include:
+  - Visual query builder for SELECT operations without writing raw SurrealQL
+  - Support for multiple WHERE conditions with logical operators (AND/OR)
+  - ORDER BY with multiple fields and sort directions
+  - GROUP BY clauses for aggregate queries
+  - Parameterized queries with dynamic value support
+  - Option to return the generated SurrealQL query for debugging and learning
+  - Comprehensive error handling and validation
+- **Batch Query Operations** _(contributed by SurrealDB)_: Implemented batch processing capabilities for large-scale data operations:
+  - Added `batchCreate`, `batchUpsert`, `batchUpdate`, and `batchDelete` operations for efficient handling of multiple records in a single request.
+  - Supports parallel processing of batches to maximize throughput.
+  - Includes progress tracking and detailed error reporting for each batch operation.
+  - Designed for high-performance ingestion, migration, and bulk modification scenarios.
+- **Connection Pooling Support** _(contributed by SurrealDB)_: Added comprehensive connection pooling for improved performance and resource management. Features include:
+  - Configurable pool settings (max/min connections, timeouts, health checks)
+  - Automatic connection health monitoring and cleanup
+  - Connection reuse across node executions
+  - Pool statistics and monitoring via "Get Pool Statistics" system operation
+  - Automatic pool cleanup on node deactivation
+- **Namespace and Database Configuration** _(contributed by SurrealDB)_: Enabled support for client-configured namespace and database in SurrealDB credentials and node operations. Users can now specify the namespace and database directly in the node parameters, allowing for dynamic selection at runtime.
+- **Enhanced Error Handling & Recovery** _(contributed by SurrealDB)_: Implements intelligent error classification, retry logic, and connection recovery. Adds operation-specific configurations and enhanced error reporting with contextual information.
+
+### Fixed
+- **WebSocket Connection Prevention** _(contributed by SurrealDB)_: Prevented connecting to SurrealDB instances using WebSocket protocols (`ws://` or `wss://`). The node now enforces HTTP/HTTPS-only connections and provides clear error messages if a WebSocket URL is supplied.
+- **Centralized Debug Logging** _(contributed by SurrealDB)_: Added a centralized debug logging system, controlled by the `SURREAL_DEBUG` environment variable, to provide detailed logs for troubleshooting and development without polluting production output.
+- **Security Vulnerabilities** _(contributed by SurrealDB)_: Applied security fixes for code scanning alerts including proper escaping/encoding and prevention of sensitive information logging.
+
+### Changed
+- **Error Handling for `executeQuery`** _(contributed by SurrealDB)_: Improved error handling for the `executeQuery` operation, ensuring that errors are classified and reported more accurately, and that retry logic is applied consistently.
+- **Development Workflow** _(contributed by SurrealDB)_: Fixed `tsc` command in development scripts and updated ESLint configuration to resolve errors and warnings.
+- **Dependencies** _(contributed by SurrealDB)_: Updated third-party dependencies for improved stability and compatibility.
+- **Build System**: Replaced Unix-specific `cp` command with cross-platform `copyfiles` package for asset copying, ensuring builds work on Windows, macOS, and Linux.
+- **CI/CD Optimization**: Streamlined GitHub Actions workflows reducing CI runs from 11 to 6 jobs (45% reduction) while maintaining code quality checks and n8n validation.
+- **Repository Configuration**: Updated repository URL to point to the correct upstream repository.
+
+
 ## [0.4.1] - 2025-05-31
 
 ### Fixed
