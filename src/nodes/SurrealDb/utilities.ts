@@ -29,9 +29,30 @@ export function createRecordId(table: string, id: string): RecordId {
 }
 
 /**
- * Parses and validates a record ID string, handling composite IDs (table:id).
+ * Normalize a record ID to string format "table:id"
+ * Handles both object format {tb: "table", id: "id"} and string format "table:id"
+ * @param recordId The record ID in either format
+ * @returns The normalized string format "table:id"
+ */
+export function normalizeRecordId(recordId: unknown): string {
+    // Handle object format {tb: "table", id: "id"}
+    if (recordId && typeof recordId === "object" && !Array.isArray(recordId)) {
+        const idObj = recordId as Record<string, unknown>;
+        if ("tb" in idObj && "id" in idObj) {
+            return `${idObj.tb}:${idObj.id}`;
+        }
+    }
+    
+    // Handle string format or convert to string
+    return String(recordId || "");
+}
+
+/**
+ * Parses and validates a record ID, handling multiple formats:
+ * - String format: "table:id" or just "id"
+ * - Object format: {tb: "table", id: "id"} (SurrealDB v2+ format)
  * If a composite ID is provided, it verifies that the table prefix matches the expected table.
- * @param recordIdString The raw record ID string from the node parameter.
+ * @param recordIdInput The raw record ID from the node parameter (string or object).
  * @param expectedTable The expected table name for the operation.
  * @param node The n8n node instance for error reporting.
  * @param itemIndex The index of the current item for error reporting.
@@ -39,17 +60,39 @@ export function createRecordId(table: string, id: string): RecordId {
  * @throws {NodeOperationError} If the record ID is invalid or the table prefix does not match.
  */
 export function parseAndValidateRecordId(
-    recordIdString: string | unknown,
+    recordIdInput: string | unknown,
     expectedTable: string,
     node: INode,
     itemIndex: number,
 ): string {
-    // Ensure recordIdString is a string
-    const idStr = String(recordIdString || "");
+    // Handle object format {tb: "table", id: "id"} from SurrealDB v2+
+    if (recordIdInput && typeof recordIdInput === "object" && !Array.isArray(recordIdInput)) {
+        const idObj = recordIdInput as Record<string, unknown>;
+        
+        // Check if it has the expected structure
+        if ("tb" in idObj && "id" in idObj) {
+            const table = String(idObj.tb || "");
+            const id = String(idObj.id || "");
+            
+            // Verify table matches if one was provided
+            if (expectedTable && table && table !== expectedTable) {
+                throw new NodeOperationError(
+                    node,
+                    `Record ID table "${table}" does not match the specified table "${expectedTable}".`,
+                    { itemIndex },
+                );
+            }
+            
+            return id;
+        }
+    }
+    
+    // Handle string format
+    const idStr = String(recordIdInput || "");
 
     if (idStr.includes(":")) {
         const [tablePrefix, id] = idStr.split(":");
-        if (tablePrefix !== expectedTable) {
+        if (expectedTable && tablePrefix !== expectedTable) {
             throw new NodeOperationError(
                 node,
                 `Record ID table prefix "${tablePrefix}" does not match the specified table "${expectedTable}".`,

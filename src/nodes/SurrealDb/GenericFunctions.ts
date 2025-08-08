@@ -170,14 +170,44 @@ export function validateNumericField(
 /**
  * Clean and validate a table name
  * Handles table names with colons and ensures consistent formatting
- * @param tableInput The raw table name input from node parameters
- * @returns The cleaned table name, with everything after a colon (if present) removed
+ * Also handles record ID objects {tb: "table", id: "id"} by extracting the table part
+ * @param tableInput The raw table name input from node parameters (can be table name, "table:id", or {tb: "table", id: "id"})
+ * @returns The cleaned table name
  */
 export function cleanTableName(tableInput: unknown): string {
+    // Handle record ID object format {tb: "table", id: "id"} from SurrealDB v2+
+    if (tableInput && typeof tableInput === "object" && !Array.isArray(tableInput)) {
+        const obj = tableInput as Record<string, unknown>;
+        
+        // If it has tb property, extract the table name from it
+        if ("tb" in obj && obj.tb) {
+            return String(obj.tb);
+        }
+    }
+    
     // Ensure table is a string
     const table = String(tableInput || "");
+    
+    // Check if it's a JSON string that needs parsing
+    if (table) {
+        const trimmed = table.trim();
+        
+        // Try to parse JSON if it looks like a JSON object
+        if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+            try {
+                const parsed = JSON.parse(trimmed);
+                
+                // Recursively call cleanTableName with the parsed object
+                if (parsed && typeof parsed === "object" && "tb" in parsed) {
+                    return cleanTableName(parsed);
+                }
+            } catch (e) {
+                // Not valid JSON, continue with string processing
+            }
+        }
+    }
 
-    // If table contains a colon, use only the part before the colon
+    // If table contains a colon (record ID format "table:id"), use only the part before the colon
     if (table.includes(":")) {
         return table.split(":")[0];
     }

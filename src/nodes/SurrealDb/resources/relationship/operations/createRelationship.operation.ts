@@ -11,6 +11,7 @@ import {
     buildCredentialsObject,
     checkQueryResult,
 } from "../../../GenericFunctions";
+import { normalizeRecordId } from "../../../utilities";
 import type { IOperationHandler } from "../../../types/operation.types";
 
 import { DEBUG, debugLog } from "../../../debug";
@@ -35,18 +36,22 @@ export const createRelationshipOperation: IOperationHandler = {
             await executeFunctions.getCredentials("surrealDbApi");
 
         // Get parameters
-        const fromRecordId = executeFunctions.getNodeParameter(
+        const fromRecordIdInput = executeFunctions.getNodeParameter(
             "fromRecordId",
             itemIndex,
-        ) as string;
+        );
         const relationshipType = executeFunctions.getNodeParameter(
             "relationshipType",
             itemIndex,
         ) as string;
-        const toRecordId = executeFunctions.getNodeParameter(
+        const toRecordIdInput = executeFunctions.getNodeParameter(
             "toRecordId",
             itemIndex,
-        ) as string;
+        );
+
+        // Normalize record IDs to handle both object and string formats
+        const fromRecordId = normalizeRecordId(fromRecordIdInput);
+        const toRecordId = normalizeRecordId(toRecordIdInput);
 
         // Validate required fields
         validateRequiredField(
@@ -68,11 +73,11 @@ export const createRelationshipOperation: IOperationHandler = {
             itemIndex,
         );
 
-        // Validate record IDs format
+        // Validate record IDs format after normalization
         if (!fromRecordId.includes(":")) {
             throw new NodeOperationError(
                 executeFunctions.getNode(),
-                `From Record ID must be in the format "table:id" (e.g., person:john)`,
+                `From Record ID must be in the format "table:id" (e.g., person:john) or {tb: "table", id: "id"}`,
                 { itemIndex },
             );
         }
@@ -80,7 +85,7 @@ export const createRelationshipOperation: IOperationHandler = {
         if (!toRecordId.includes(":")) {
             throw new NodeOperationError(
                 executeFunctions.getNode(),
-                `To Record ID must be in the format "table:id" (e.g., person:jane)`,
+                `To Record ID must be in the format "table:id" (e.g., person:jane) or {tb: "table", id: "id"}`,
                 { itemIndex },
             );
         }

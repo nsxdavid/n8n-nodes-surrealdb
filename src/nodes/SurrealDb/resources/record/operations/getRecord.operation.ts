@@ -34,26 +34,31 @@ export const getRecordOperation: IOperationHandler = {
             const idInput = executeFunctions.getNodeParameter(
                 "id",
                 itemIndex,
-            ) as string;
+            );
 
-            // Clean and standardize the table name
-            table = cleanTableName(table);
-
-            // Ensure idInput is a string
-            const idInputStr = String(idInput || "");
+            // Clean and standardize the table name if provided
+            if (table) {
+                table = cleanTableName(table);
+            }
 
             debugLog("getRecord", "Original table:", itemIndex, table);
-            debugLog("getRecord", "Record ID input:", itemIndex, idInputStr);
-            debugLog(
-                "getRecord",
-                "Has colon:",
-                itemIndex,
-                idInputStr.includes(":"),
-            );
-            // If no table is specified but idInput has a table prefix, use the extracted table
-            if (!table && idInputStr.includes(":")) {
-                table = idInputStr.split(":")[0];
-                debugLog("getRecord", "Extracted table:", itemIndex, table);
+            debugLog("getRecord", "Record ID input:", itemIndex, idInput);
+
+            // Try to extract table from the ID if no table is specified
+            if (!table) {
+                // Handle object format {tb: "table", id: "id"}
+                if (idInput && typeof idInput === "object" && !Array.isArray(idInput)) {
+                    const idObj = idInput as Record<string, unknown>;
+                    if ("tb" in idObj && idObj.tb) {
+                        table = cleanTableName(String(idObj.tb));
+                        debugLog("getRecord", "Extracted table from object:", itemIndex, table);
+                    }
+                }
+                // Handle string format "table:id"
+                else if (idInput && typeof idInput === "string" && idInput.includes(":")) {
+                    table = cleanTableName(idInput.split(":")[0]);
+                    debugLog("getRecord", "Extracted table from string:", itemIndex, table);
+                }
             }
 
             debugLog("getRecord", "Final table:", itemIndex, table);
@@ -62,7 +67,7 @@ export const getRecordOperation: IOperationHandler = {
             if (!table) {
                 throw new NodeOperationError(
                     executeFunctions.getNode(),
-                    'Either Table field must be provided or Record ID must include a table prefix (e.g., "table:id")',
+                    'Either Table field must be provided or Record ID must include a table prefix (e.g., "table:id" or {tb: "table", id: "id"})',
                     { itemIndex },
                 );
             }

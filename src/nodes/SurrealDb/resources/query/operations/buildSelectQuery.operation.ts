@@ -456,7 +456,7 @@ export const buildSelectQueryOperation: IOperationHandler = {
 
                                 // Add generated query to output if requested
                                 if (returnGeneratedQuery) {
-                                    itemData.generatedQuery = finalQuery;
+                                    (itemData as IDataObject).generatedQuery = finalQuery;
                                 }
 
                                 returnData.push({
@@ -481,7 +481,7 @@ export const buildSelectQueryOperation: IOperationHandler = {
                         const itemData = { ...formattedResult };
 
                         if (returnGeneratedQuery) {
-                            itemData.generatedQuery = finalQuery;
+                            (itemData as IDataObject).generatedQuery = finalQuery;
                         }
 
                         returnData.push({
@@ -496,7 +496,7 @@ export const buildSelectQueryOperation: IOperationHandler = {
                 const itemData = { ...formattedResult };
 
                 if (returnGeneratedQuery) {
-                    itemData.generatedQuery = finalQuery;
+                    (itemData as IDataObject).generatedQuery = finalQuery;
                 }
 
                 returnData.push({

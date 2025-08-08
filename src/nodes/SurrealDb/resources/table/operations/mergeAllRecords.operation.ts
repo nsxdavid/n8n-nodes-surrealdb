@@ -42,7 +42,7 @@ export const mergeAllRecordsOperation: IOperationHandler = {
             const tableInput = executeFunctions.getNodeParameter(
                 "table",
                 itemIndex,
-            ) as string;
+            ); // Don't cast to string yet - it might be an object
             validateRequiredField(
                 executeFunctions,
                 tableInput,
@@ -124,9 +124,9 @@ export const mergeAllRecordsOperation: IOperationHandler = {
             const finalQuery = prepareSurrealQuery(query, resolvedCredentials);
 
             debugLog("mergeAllRecords", "Final query", itemIndex, finalQuery);
-            // Execute the query
+            // Execute the query with the data parameter
 
-            const result = await client.query<[unknown[]]>(finalQuery);
+            const result = await client.query<[unknown[]]>(finalQuery, { data });
 
             // Check for query errors
             const queryCheck = checkQueryResult(result, "Query failed");

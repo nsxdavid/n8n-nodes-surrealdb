@@ -37,24 +37,33 @@ export const deleteRecordOperation: IOperationHandler = {
             const idInput = executeFunctions.getNodeParameter(
                 "id",
                 itemIndex,
-            ) as string;
+            );
 
-            // Clean and standardize the table name
-            table = cleanTableName(table);
+            // Clean and standardize the table name if provided
+            if (table) {
+                table = cleanTableName(table);
+            }
 
-            // Ensure idInput is a string
-            const idInputStr = String(idInput || "");
-
-            // If no table is specified but idInput has a table prefix, use the extracted table
-            if (!table && idInputStr.includes(":")) {
-                table = idInputStr.split(":")[0];
+            // Try to extract table from the ID if no table is specified
+            if (!table) {
+                // Handle object format {tb: "table", id: "id"}
+                if (idInput && typeof idInput === "object" && !Array.isArray(idInput)) {
+                    const idObj = idInput as Record<string, unknown>;
+                    if ("tb" in idObj && idObj.tb) {
+                        table = cleanTableName(String(idObj.tb));
+                    }
+                }
+                // Handle string format "table:id"
+                else if (idInput && typeof idInput === "string" && idInput.includes(":")) {
+                    table = cleanTableName(idInput.split(":")[0]);
+                }
             }
 
             // Only validate table as required if it couldn't be extracted from the Record ID
             if (!table) {
                 throw new NodeOperationError(
                     executeFunctions.getNode(),
-                    'Either Table field must be provided or Record ID must include a table prefix (e.g., "table:id")',
+                    'Either Table field must be provided or Record ID must include a table prefix (e.g., "table:id" or {tb: "table", id: "id"})',
                     { itemIndex },
                 );
             }

@@ -41,7 +41,7 @@ export const updateAllRecordsOperation: IOperationHandler = {
             const tableInput = executeFunctions.getNodeParameter(
                 "table",
                 itemIndex,
-            ) as string;
+            ); // Don't cast to string yet - it might be an object
             validateRequiredField(
                 executeFunctions,
                 tableInput,

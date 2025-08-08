@@ -49,9 +49,9 @@ export const relationshipFields: INodeProperties[] = [
         type: "string",
         required: true,
         default: "",
-        placeholder: "e.g., person:john, article:123",
+        placeholder: "e.g., person:john, article:123, {tb: 'person', id: 'john'}",
         description:
-            'The ID of the record to create the relationship from. Must be in the format "table:id"',
+            'The ID of the record to create the relationship from. Can be a string "table:id" or an object {tb: "table", id: "id"}',
         displayOptions: {
             show: {
                 resource: ["relationship"],
@@ -81,9 +81,9 @@ export const relationshipFields: INodeProperties[] = [
         type: "string",
         required: true,
         default: "",
-        placeholder: "e.g., person:jane, product:456",
+        placeholder: "e.g., person:jane, product:456, {tb: 'person', id: 'jane'}",
         description:
-            'The ID of the record to create the relationship to. Must be in the format "table:id"',
+            'The ID of the record to create the relationship to. Can be a string "table:id" or an object {tb: "table", id: "id"}',
         displayOptions: {
             show: {
                 resource: ["relationship"],
@@ -134,9 +134,9 @@ export const relationshipFields: INodeProperties[] = [
         type: "string",
         required: false,
         default: "",
-        placeholder: "e.g., person:john, article:123",
+        placeholder: "e.g., person:john, article:123, {tb: 'person', id: 'john'}",
         description:
-            'The ID of the record to delete the relationship from. Must be in the format "table:id". At least one of From Record ID, Relationship Type, or To Record ID must be provided',
+            'The ID of the record to delete the relationship from. Can be a string "table:id" or an object {tb: "table", id: "id"}. At least one of From Record ID, Relationship Type, or To Record ID must be provided',
         displayOptions: {
             show: {
                 resource: ["relationship"],
@@ -150,9 +150,9 @@ export const relationshipFields: INodeProperties[] = [
         type: "string",
         required: false,
         default: "",
-        placeholder: "e.g., person:jane, product:456",
+        placeholder: "e.g., person:jane, product:456, {tb: 'person', id: 'jane'}",
         description:
-            'The ID of the record to delete the relationship to. Must be in the format "table:id". At least one of From Record ID, Relationship Type, or To Record ID must be provided',
+            'The ID of the record to delete the relationship to. Can be a string "table:id" or an object {tb: "table", id: "id"}. At least one of From Record ID, Relationship Type, or To Record ID must be provided',
         displayOptions: {
             show: {
                 resource: ["relationship"],
@@ -168,9 +168,9 @@ export const relationshipFields: INodeProperties[] = [
         type: "string",
         required: false,
         default: "",
-        placeholder: "e.g., person:john, article:123",
+        placeholder: "e.g., person:john, article:123, {tb: 'person', id: 'john'}",
         description:
-            'The ID of the record to query relationships for. Must be in the format "table:id". Leave empty to query all relationships of the specified type',
+            'The ID of the record to query relationships for. Can be a string "table:id" or an object {tb: "table", id: "id"}. Leave empty to query all relationships of the specified type',
         displayOptions: {
             show: {
                 resource: ["relationship"],

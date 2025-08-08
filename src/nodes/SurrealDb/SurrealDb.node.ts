@@ -5,6 +5,7 @@ import type {
     INodeType,
     INodeTypeDescription,
     ILoadOptionsFunctions,
+    NodeConnectionType,
 } from "n8n-workflow";
 
 import { DEBUG } from "./debug";
@@ -99,8 +100,8 @@ export class SurrealDb implements INodeType {
         defaults: {
             name: "SurrealDB",
         },
-        inputs: ["main"],
-        outputs: ["main"],
+        inputs: ["main" as NodeConnectionType],
+        outputs: ["main" as NodeConnectionType],
         usableAsTool: true,
         // Use the operation parameter to look up the display name in the flat map
         subtitle:

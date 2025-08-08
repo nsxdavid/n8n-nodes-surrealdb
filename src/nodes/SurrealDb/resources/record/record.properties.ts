@@ -69,7 +69,7 @@ export const recordFields: INodeProperties[] = [
         required: false,
         default: "",
         description:
-            'SurrealDB table name (e.g., "person", "product"). You can also use a full record ID (e.g., "person:john") and the table part will be extracted automatically. Optional if Record ID includes a table prefix.',
+            'SurrealDB table name (e.g., "person", "product"). You can also use a full record ID (e.g., "person:john" or {tb: "person", id: "john"}) and the table part will be extracted automatically. Optional if Record ID includes a table prefix.',
         displayOptions: {
             show: {
                 resource: ["record"],
@@ -91,7 +91,7 @@ export const recordFields: INodeProperties[] = [
         required: true,
         default: "",
         description:
-            'SurrealDB table name (e.g., "person", "product", "order"). You can also use a full record ID (e.g., "person:john") and the table part will be extracted automatically.',
+            'SurrealDB table name (e.g., "person", "product", "order"). You can also use a full record ID (e.g., "person:john" or {tb: "person", id: "john"}) and the table part will be extracted automatically.',
         displayOptions: {
             show: {
                 resource: ["record"],
@@ -107,7 +107,7 @@ export const recordFields: INodeProperties[] = [
         required: false,
         default: "",
         description:
-            'Optional ID for the new record. If not provided, SurrealDB will auto-generate an ID. Can include table prefix (e.g., "person:john", "product:abc123").',
+            'Optional ID for the new record. If not provided, SurrealDB will auto-generate an ID. Can be a string (e.g., "john", "person:john") or object format from SurrealDB v2+ (e.g., {tb: "person", id: "john"}).',
         displayOptions: {
             show: {
                 resource: ["record"],
@@ -122,7 +122,7 @@ export const recordFields: INodeProperties[] = [
         required: true,
         default: "",
         description:
-            'ID of the record. Can include table prefix (e.g., "person:john", "product:abc123"). If Table field is empty, the table part will be extracted from the Record ID.',
+            'ID of the record. Can be a string (e.g., "john", "person:john") or object format from SurrealDB v2+ (e.g., {tb: "person", id: "john"}). If Table field is empty, the table part will be extracted from the Record ID.',
         displayOptions: {
             show: {
                 resource: ["record"],

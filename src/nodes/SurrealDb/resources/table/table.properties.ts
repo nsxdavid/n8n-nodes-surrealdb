@@ -88,8 +88,10 @@ export const tableFields: INodeProperties[] = [
         type: "string",
         required: true,
         default: "",
+        placeholder: "e.g., users or {{ $json.tb }}",
+        hint: "Enter a table name or use an expression. For record ID objects from SurrealDB v2+, use {{ $json.tb }} to extract the table name or {{ JSON.stringify($json) }} to pass the full object.",
         description:
-            'SurrealDB table name (e.g., "person", "product", "order"). You can also use a full record ID (e.g., "person:john") and the table part will be extracted automatically.',
+            'SurrealDB table name (e.g., "person", "product", "order"). Supports both string format "person:john" and object format {tb: "person", id: "john"} from SurrealDB v2+. The table part will be extracted automatically.',
         displayOptions: {
             show: {
                 resource: ["table"],
@@ -113,8 +115,10 @@ export const tableFields: INodeProperties[] = [
         type: "string",
         required: false,
         default: "",
+        placeholder: "e.g., users or {{ $json.tb }}",
+        hint: "Enter a table name or use an expression. For record ID objects from SurrealDB v2+, use {{ $json.tb }} to extract the table name or {{ JSON.stringify($json) }} to pass the full object.",
         description:
-            'SurrealDB table name (e.g., "person", "product"). You can also use a full record ID (e.g., "person:john") and the table part will be extracted automatically. Optional if Record IDs include a table prefix.',
+            'SurrealDB table name (e.g., "person", "product"). Supports both string format "person:john" and object format {tb: "person", id: "john"} from SurrealDB v2+. The table part will be extracted automatically. Optional if Record IDs include a table prefix.',
         displayOptions: {
             show: {
                 resource: ["table"],
@@ -174,7 +178,7 @@ export const tableFields: INodeProperties[] = [
         default: "",
         placeholder: "id1,id2,id3 or table:id1,table:id2,table:id3",
         description:
-            'Comma-separated list of record IDs. Can include table prefix (e.g., "person:john", "product:abc123"). If Table field is empty, the table part will be extracted from the Record IDs.',
+            'Comma-separated list of record IDs. Can be strings (e.g., "person:john", "product:abc123") or object format from SurrealDB v2+ (e.g., {tb: "person", id: "john"}). If Table field is empty, the table part will be extracted from the Record IDs.',
         displayOptions: {
             show: {
                 resource: ["table"],

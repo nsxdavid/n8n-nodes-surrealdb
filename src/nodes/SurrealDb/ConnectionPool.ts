@@ -539,7 +539,7 @@ export class SurrealConnectionPool {
                 );
             });
 
-            const validationPromise = client.query("SELECT 1");
+            const validationPromise = client.query("RETURN 1");
 
             await Promise.race([validationPromise, timeoutPromise]);
         } catch (error) {
@@ -654,7 +654,7 @@ export class SurrealConnectionPool {
                     );
                 });
 
-                const healthCheckPromise = entry.client.query("SELECT 1");
+                const healthCheckPromise = entry.client.query("RETURN 1");
 
                 try {
                     await Promise.race([healthCheckPromise, timeoutPromise]);
