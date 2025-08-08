@@ -201,7 +201,7 @@ export function cleanTableName(tableInput: unknown): string {
                 if (parsed && typeof parsed === "object" && "tb" in parsed) {
                     return cleanTableName(parsed);
                 }
-            } catch (e) {
+            } catch (_e) {
                 // Not valid JSON, continue with string processing
             }
         }
