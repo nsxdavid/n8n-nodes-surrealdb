@@ -11,7 +11,7 @@
 <br>
 
 <p align="center">
-    <a href="https://github.com/surrealdb/surrealdb.js"><img src="https://img.shields.io/badge/status-beta-ff00bb.svg?style=flat-square"></a>
+    <a href="https://github.com/nsxdavid/n8n-nodes-surrealdb"><img src="https://img.shields.io/badge/status-stable-00bb44.svg?style=flat-square"></a>
     &nbsp;
     <a href="https://surrealdb.com/docs/integrations/data-management/n8n"><img src="https://img.shields.io/badge/docs-view-44cc11.svg?style=flat-square"></a>
     &nbsp;

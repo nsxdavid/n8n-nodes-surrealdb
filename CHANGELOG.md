@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.3] - 2025-01-08
+
+### Fixed
+- **AI Tool Compatibility**: Fixed "Received tool input did not match expected schema" error when using query operations as AI tools
+  - Changed Parameters field type from `json` to `string` for both Execute Query and Build Select Query operations
+  - AI tools can now properly handle empty parameters or JSON parameter strings
+  - Maintains backward compatibility with existing workflows
+  - Parameters are still validated and parsed as JSON internally
+
 ## [0.5.2] - 2025-01-08
 
 ### Fixed
@@ -148,6 +157,7 @@ _Note: This release includes significant improvements contributed by the Surreal
 ### Fixed
 - N/A (initial release)
 
+[0.5.3]: https://github.com/nsxdavid/n8n-nodes-surrealdb/compare/v0.5.2...v0.5.3
 [0.5.2]: https://github.com/nsxdavid/n8n-nodes-surrealdb/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/nsxdavid/n8n-nodes-surrealdb/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/nsxdavid/n8n-nodes-surrealdb/compare/v0.4.1...v0.5.0
