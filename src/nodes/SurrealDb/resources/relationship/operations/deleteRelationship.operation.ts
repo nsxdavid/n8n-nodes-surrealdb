@@ -52,8 +52,12 @@ export const deleteRelationshipOperation: IOperationHandler = {
         );
 
         // Normalize record IDs to handle both object and string formats
-        const fromRecordId = fromRecordIdInput ? normalizeRecordId(fromRecordIdInput) : "";
-        const toRecordId = toRecordIdInput ? normalizeRecordId(toRecordIdInput) : "";
+        const fromRecordId = fromRecordIdInput
+            ? normalizeRecordId(fromRecordIdInput)
+            : "";
+        const toRecordId = toRecordIdInput
+            ? normalizeRecordId(toRecordIdInput)
+            : "";
 
         // Ensure at least one parameter is provided
         if (!fromRecordId && !relationshipType && !toRecordId) {

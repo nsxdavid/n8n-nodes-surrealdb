@@ -42,7 +42,7 @@ export function normalizeRecordId(recordId: unknown): string {
             return `${idObj.tb}:${idObj.id}`;
         }
     }
-    
+
     // Handle string format or convert to string
     return String(recordId || "");
 }
@@ -66,14 +66,18 @@ export function parseAndValidateRecordId(
     itemIndex: number,
 ): string {
     // Handle object format {tb: "table", id: "id"} from SurrealDB v2+
-    if (recordIdInput && typeof recordIdInput === "object" && !Array.isArray(recordIdInput)) {
+    if (
+        recordIdInput &&
+        typeof recordIdInput === "object" &&
+        !Array.isArray(recordIdInput)
+    ) {
         const idObj = recordIdInput as Record<string, unknown>;
-        
+
         // Check if it has the expected structure
         if ("tb" in idObj && "id" in idObj) {
             const table = String(idObj.tb || "");
             const id = String(idObj.id || "");
-            
+
             // Verify table matches if one was provided
             if (expectedTable && table && table !== expectedTable) {
                 throw new NodeOperationError(
@@ -82,11 +86,11 @@ export function parseAndValidateRecordId(
                     { itemIndex },
                 );
             }
-            
+
             return id;
         }
     }
-    
+
     // Handle string format
     const idStr = String(recordIdInput || "");
 

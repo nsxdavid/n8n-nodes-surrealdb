@@ -176,27 +176,31 @@ export function validateNumericField(
  */
 export function cleanTableName(tableInput: unknown): string {
     // Handle record ID object format {tb: "table", id: "id"} from SurrealDB v2+
-    if (tableInput && typeof tableInput === "object" && !Array.isArray(tableInput)) {
+    if (
+        tableInput &&
+        typeof tableInput === "object" &&
+        !Array.isArray(tableInput)
+    ) {
         const obj = tableInput as Record<string, unknown>;
-        
+
         // If it has tb property, extract the table name from it
         if ("tb" in obj && obj.tb) {
             return String(obj.tb);
         }
     }
-    
+
     // Ensure table is a string
     const table = String(tableInput || "");
-    
+
     // Check if it's a JSON string that needs parsing
     if (table) {
         const trimmed = table.trim();
-        
+
         // Try to parse JSON if it looks like a JSON object
-        if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+        if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
             try {
                 const parsed = JSON.parse(trimmed);
-                
+
                 // Recursively call cleanTableName with the parsed object
                 if (parsed && typeof parsed === "object" && "tb" in parsed) {
                     return cleanTableName(parsed);

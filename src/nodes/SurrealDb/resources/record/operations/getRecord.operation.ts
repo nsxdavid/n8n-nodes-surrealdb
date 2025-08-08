@@ -31,10 +31,7 @@ export const getRecordOperation: IOperationHandler = {
                 "table",
                 itemIndex,
             ) as string;
-            const idInput = executeFunctions.getNodeParameter(
-                "id",
-                itemIndex,
-            );
+            const idInput = executeFunctions.getNodeParameter("id", itemIndex);
 
             // Clean and standardize the table name if provided
             if (table) {
@@ -47,17 +44,35 @@ export const getRecordOperation: IOperationHandler = {
             // Try to extract table from the ID if no table is specified
             if (!table) {
                 // Handle object format {tb: "table", id: "id"}
-                if (idInput && typeof idInput === "object" && !Array.isArray(idInput)) {
+                if (
+                    idInput &&
+                    typeof idInput === "object" &&
+                    !Array.isArray(idInput)
+                ) {
                     const idObj = idInput as Record<string, unknown>;
                     if ("tb" in idObj && idObj.tb) {
                         table = cleanTableName(String(idObj.tb));
-                        debugLog("getRecord", "Extracted table from object:", itemIndex, table);
+                        debugLog(
+                            "getRecord",
+                            "Extracted table from object:",
+                            itemIndex,
+                            table,
+                        );
                     }
                 }
                 // Handle string format "table:id"
-                else if (idInput && typeof idInput === "string" && idInput.includes(":")) {
+                else if (
+                    idInput &&
+                    typeof idInput === "string" &&
+                    idInput.includes(":")
+                ) {
                     table = cleanTableName(idInput.split(":")[0]);
-                    debugLog("getRecord", "Extracted table from string:", itemIndex, table);
+                    debugLog(
+                        "getRecord",
+                        "Extracted table from string:",
+                        itemIndex,
+                        table,
+                    );
                 }
             }
 

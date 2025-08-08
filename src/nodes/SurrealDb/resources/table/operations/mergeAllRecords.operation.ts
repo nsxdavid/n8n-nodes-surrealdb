@@ -126,7 +126,9 @@ export const mergeAllRecordsOperation: IOperationHandler = {
             debugLog("mergeAllRecords", "Final query", itemIndex, finalQuery);
             // Execute the query with the data parameter
 
-            const result = await client.query<[unknown[]]>(finalQuery, { data });
+            const result = await client.query<[unknown[]]>(finalQuery, {
+                data,
+            });
 
             // Check for query errors
             const queryCheck = checkQueryResult(result, "Query failed");

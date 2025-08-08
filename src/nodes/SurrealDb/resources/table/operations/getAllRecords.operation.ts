@@ -38,14 +38,14 @@ export const getAllRecordsOperation: IOperationHandler = {
                 "table",
                 itemIndex,
             ); // Don't cast to string yet - it might be an object
-            
+
             validateRequiredField(
                 executeFunctions,
                 tableInput,
                 "Table",
                 itemIndex,
             );
-            
+
             // cleanTableName handles all formats: string, object, JSON string, etc.
             const table = cleanTableName(tableInput);
 
