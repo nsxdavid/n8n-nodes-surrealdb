@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-surrealdb",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "n8n node to connect to SurrealDB",
   "keywords": [
     "n8n-community-node-package",
