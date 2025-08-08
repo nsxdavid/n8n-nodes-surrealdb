@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.1] - 2025-01-08
+
+### Fixed
+- **SurrealDB SDK v1.0.0+ Compatibility**: Added full support for the RecordId object format introduced in SurrealDB JavaScript SDK v1.0.0+
+  - The SDK now returns record IDs as objects with `{tb: 'table', id: 'id'}` structure instead of simple strings
+  - Updated all record operations (get, update, delete, merge, upsert) to handle both object and string ID formats transparently
+  - Fixed table parameter handling in all table operations to properly parse RecordId objects
+  - Added utilities to normalize and convert between object and string ID formats
+  - Users no longer need to manually handle the RecordId object format - the node handles it automatically
+- **Connection Validation**: Fixed connection validation and health check queries to use valid SurrealQL syntax (`RETURN 1` instead of `SELECT 1`)
+- **Merge All Records**: Fixed missing data parameter in mergeAllRecords operation that was causing "Can not use NONE in a MERGE clause" error
+- **Table Name Parsing**: Enhanced cleanTableName function to handle RecordId objects, JSON strings, and regular table names uniformly
+- **Error Messages**: Improved error messages and field descriptions to better guide users without exposing internal complexity
+
 ## [0.5.0] - 2025-01-08
 
 _Note: This release includes significant improvements contributed by the SurrealDB team through their fork of this project._
@@ -126,6 +140,7 @@ _Note: This release includes significant improvements contributed by the Surreal
 ### Fixed
 - N/A (initial release)
 
+[0.5.1]: https://github.com/nsxdavid/n8n-nodes-surrealdb/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/nsxdavid/n8n-nodes-surrealdb/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/nsxdavid/n8n-nodes-surrealdb/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/nsxdavid/n8n-nodes-surrealdb/compare/v0.3.1...v0.4.0
