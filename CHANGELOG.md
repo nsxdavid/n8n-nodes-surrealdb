@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.4] - 2025-01-19
+
+### Fixed
+- **Execute Query Operation**: Fixed "Cannot read properties of null (reading '$error')" error when processing SurrealDB batch query results containing null/undefined elements
+  - Updated filtering logic to use loose equality (!= null) instead of strict equality (!== null) to filter out both null AND undefined values
+  - Enhanced checkQueryResult function to iterate over all result elements instead of only checking the first element, properly handling batch operations
+  - Resolves crashes during batch query operations where SurrealDB returns arrays with mixed null/undefined elements
+
 ## [0.5.3] - 2025-01-08
 
 ### Fixed
@@ -157,6 +165,7 @@ _Note: This release includes significant improvements contributed by the Surreal
 ### Fixed
 - N/A (initial release)
 
+[0.5.4]: https://github.com/nsxdavid/n8n-nodes-surrealdb/compare/v0.5.3...v0.5.4
 [0.5.3]: https://github.com/nsxdavid/n8n-nodes-surrealdb/compare/v0.5.2...v0.5.3
 [0.5.2]: https://github.com/nsxdavid/n8n-nodes-surrealdb/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/nsxdavid/n8n-nodes-surrealdb/compare/v0.5.0...v0.5.1
