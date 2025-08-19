@@ -669,13 +669,9 @@ export function checkQueryResult(
             }
         }
     }
-    
+
     // Check if the result itself (not an array) has an error property
-    if (
-        result &&
-        typeof result === "object" &&
-        "error" in result
-    ) {
+    if (result && typeof result === "object" && "error" in result) {
         // Extract the error message safely
         const errorObj = result as Record<string, unknown>;
         const errorText = String(errorObj.error || "Unknown error");
